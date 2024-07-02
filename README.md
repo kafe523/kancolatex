@@ -2,11 +2,20 @@
 
 A command line tool generate LaTex template from Kancolle Deck Builder.
 
+## Requirement
+
+- Python 3.10 or greater
+
 ## How to setup
 
 0. Launch a terminal
 
 1. Clone this repo
+
+- If you don't know git, enter following command into your terminal
+```sh
+git clone https://github.com/kafe523/kancolatex.git
+```
 
 2. Create a python venv
 ```bash
@@ -103,6 +112,7 @@ type DefineConfig = {
 
 % KancoLaTeX:define:end
 ```
+### Output
 
 Default the the result will output to `stdout` and log to `stderr`. If you want to store the result somewhere else can use `-o` flag or shell pipeline.
 
