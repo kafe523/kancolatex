@@ -11,3 +11,6 @@ venv
 .env
 _*.tex
 _*.json
+
+# data/
+data.db
