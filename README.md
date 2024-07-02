@@ -17,6 +17,10 @@ A command line tool generate LaTex template from Kancolle Deck Builder.
 git clone https://github.com/kafe523/kancolatex.git
 ```
 
+After cloning, please cd inside the folder
+```sh
+cd kancolatex/
+```
 2. Create a python venv
 ```bash
 python3 -m venv .venv
@@ -57,6 +61,11 @@ python3 -m venv .venv
     ```sh
     kancolatex --reset
     ```
+# How to update
+
+0. Deactivate your python venv is it is enabled
+1. Delete your local `Kancolatex` folder
+2. [How to setup](#how-to-setup)
 
 ## How to use
 
@@ -98,7 +107,6 @@ type DefineConfig = {
     param?: string[];
 }
 ```
-
 - Macro mode `<...>`
 - Access mode `<<...>>`
 
@@ -119,7 +127,7 @@ Default the the result will output to `stdout` and log to `stderr`. If you want 
 ### Example 1
 
 ```sh
-kancolatex -t ./_example_1_template.tex -n ./_example_1_fleet.json
+kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
 ```
 
 - `example_1_fleet.json`
