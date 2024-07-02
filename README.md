@@ -266,3 +266,13 @@ DEV_MODE=TRUE
 > But you can fork this project and hove fun with it.
 
 ## Special Thanks
+
+- Apple
+- poky
+
+- [noro6](https://github.com/noro6) Author of [制空権シミュレータ](https://noro6.github.io/kc-web/#/)
+  
+- [myangelkamikaze](https://github.com/myangelkamikaze) Contributor of [ElectronicObserverEN](https://github.com/ElectronicObserverEN)
+- [Jebzou](https://github.com/Jebzou) Contributor of [ElectronicObserverEN]
+
+- [KC3Kai](https://github.com/KC3Kai/KC3Kai)
