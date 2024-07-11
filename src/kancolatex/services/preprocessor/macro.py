@@ -305,7 +305,7 @@ class PreDefineMacro:
                     if _functionWrapper is None
                     else _functionWrapper(_attrAccessResult)
                 )
-
+                LOGGER.debug(f"{_accessResult = }")
                 self._macroLookUpCache.update({_macro: _accessResult})
                 self._latexLookUpCache.update({_latex: _accessResult})
             except IndexError as e:
@@ -340,7 +340,7 @@ class PreDefineMacro:
                 shipPos,
                 r"\ship{}nameEn",
                 "SHIP_{}_NAME_EN",
-                "",  # No Access !!!
+                "Ship.{}.data.name",
                 _functionWrapper=self.translator.translate_ship,
             )
             _template(shipPos, r"\ship{}level", "SHIP_{}_LEVEL", "Ship.{}.level")

@@ -25,7 +25,7 @@ class TranslatorBuilder:
                     LOGGER.error(
                         f"key: {k!r} found non string value, type: {type(v)}, value: {v}"
                     )
-            self.ships_en = dict()
+                self.ships_en = dict()
 
         if self.equipments_en is not None:
             nonStrValue = {
@@ -39,7 +39,7 @@ class TranslatorBuilder:
                     LOGGER.error(
                         f"key: {k!r} found non string value, type: {type(v)}, value: {v}"
                     )
-            self.equipments_en = dict()
+                self.equipments_en = dict()
 
 
 @dataclass(slots=True)
