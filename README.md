@@ -61,7 +61,7 @@ python3 -m venv .venv
     ```sh
     kancolatex --reset
     ```
-# How to update
+## How to update
 
 0. Deactivate your python venv is it is enabled
 1. Delete your local `Kancolatex` folder
