@@ -922,7 +922,10 @@ class Ship(ShipBase):
                     if bonus.shipTypes is not None and not _type in bonus.shipTypes:
                         continue
                     # 艦id判定
-                    if bonus.shipIds is not None and not _id in bonus.shipIds:
+                    if (
+                        bonus.shipMasterIds is not None
+                        and not _id in bonus.shipMasterIds
+                    ):
                         continue
                     # 対空電探判定
                     if bonus.bonusesIfAirRadar is not None and not antiAirRadarCount:
@@ -1011,6 +1014,7 @@ class Ship(ShipBase):
                             bonusesCopy.fromTypeId = fitItemsB.data.apiTypeId
                             sumBonuses.append(bonusesCopy)
                     else:
+                        # ようやくBonusを適用
                         bonusesCopy = bonus.bonuses.model_copy()
                         bonusesCopy.fromTypeId = fitItems[0].data.apiTypeId
                         sumBonuses.append(bonusesCopy)
