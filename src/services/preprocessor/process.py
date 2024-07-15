@@ -7,7 +7,7 @@ from typing_extensions import Optional, Sequence
 
 from ..translator.translator import Translator
 from .macro import isValidMacro, attrAccess, PreDefineMacro, MacroValueType
-from ...types.serialization.noro6.fleet.fleet_info import FleetInfo
+from ...types.noro6 import FleetInfo
 
 from ...logger import LOGGER
 

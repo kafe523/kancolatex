@@ -10,8 +10,8 @@ from typing_extensions import Any, Callable
 
 from ... import utils
 from ..translator.translator import Translator
-from ...types.serialization.noro6.fleet.fleet import Fleet
-from ...types.serialization.noro6.fleet.fleet_info import FleetInfo
+from ...types.noro6 import Fleet
+from ...types.noro6 import FleetInfo
 
 from ...logger import LOGGER
 

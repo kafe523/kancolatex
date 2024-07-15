@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 from typing_extensions import MutableSequence
 
-from ...types.serialization.noro6.item.item_master import ItemMaster
+from ...types import ItemMaster
 from ...types.const import AIR_STATE, PROF_LEVEL_BORDER
 
 

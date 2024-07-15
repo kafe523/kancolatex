@@ -11,7 +11,7 @@ from typing_extensions import Sequence
 from . import database
 from .services.translator.translator import TranslatorBuilder, Translator
 from .services.preprocessor.process import Process
-from .types.serialization.noro6.convert import Convert
+from .types import Convert
 
 from .logger import LOGGER
 
@@ -92,7 +92,7 @@ _SUCCESS = 0
 _ERROR = 1
 
 
-def main(argv:Sequence[str] | None = None):
+def main(argv: Sequence[str] | None = None):
 
     parser = argumentParser()
     args = Args(**vars(parser.parse_args(argv)))

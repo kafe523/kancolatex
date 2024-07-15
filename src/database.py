@@ -12,11 +12,11 @@ from typing_extensions import Any, Generator, Optional
 
 from .path import DATA_DIR
 from .types.equipment_id import EquipmentId
-from .types.const import EquipmentTypes
 from .types.ship_id import ShipId
-from .types.serialization.eo_en.fit_bonus import FitBonusPerEquipment
-from .types.serialization.kcwiki_en import KcwikiEquipment, KcwikiShip
-from .types.serialization.noro6.interface.master import (
+from .types.const import EquipmentTypes
+
+from .types import FitBonusPerEquipment, KcwikiEquipment, KcwikiShip
+from .types import (
     MasterTypeValidator,
     MasterItem,
     MasterShip,
