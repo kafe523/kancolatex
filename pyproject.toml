@@ -20,7 +20,7 @@ test = ["pytest"]
 dev = ["kancolatex[test]"]
 
 [project.scripts]
-kancolatex = "src.kancolatex.__main__:main"
+kancolatex = "src.__main__:main"
 
 [tool.setuptools.packages.find]
 exclude = ["tests"]
