@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
-from ..interface import MasterItem
-from ... import const, ShipId
+from ... import const
 from ...const import EquipmentTypes
+from ...ship_id import ShipId
+from ..interface import MasterItem
 
 
 @dataclass(slots=True)

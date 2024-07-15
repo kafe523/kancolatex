@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 from typing_extensions import Optional
 
-from .enemy_fleet import DeckBuilderEnemyFleet
 from ...const import FormationType
+from .enemy_fleet import DeckBuilderEnemyFleet
 
 
 class DeckBuilderCell(BaseModel):

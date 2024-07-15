@@ -5,23 +5,22 @@ import enum
 import json
 import sqlite3
 
-
 import httpx
+from typing_extensions import Any
+from typing_extensions import Generator
+from typing_extensions import Optional
 
-from typing_extensions import Any, Generator, Optional
-
+from .logger import LOGGER
 from .path import DATA_DIR
+from .types import FitBonusPerEquipment
+from .types import KcwikiEquipment
+from .types import KcwikiShip
+from .types import MasterItem
+from .types import MasterShip
+from .types import MasterTypeValidator
+from .types.const import EquipmentTypes
 from .types.equipment_id import EquipmentId
 from .types.ship_id import ShipId
-from .types.const import EquipmentTypes
-
-from .types import FitBonusPerEquipment, KcwikiEquipment, KcwikiShip
-from .types import (
-    MasterTypeValidator,
-    MasterItem,
-    MasterShip,
-)
-from .logger import LOGGER
 
 DB_FILE_PATH = DATA_DIR / "data.db"
 

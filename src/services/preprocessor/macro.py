@@ -2,18 +2,20 @@ from __future__ import annotations
 
 import math
 import operator
+from dataclasses import dataclass
+from dataclasses import field
+from enum import Enum
+from enum import IntEnum
+from enum import auto
 
-from dataclasses import dataclass, field
-from enum import Enum, IntEnum, auto
-
-from typing_extensions import Any, Callable
+from typing_extensions import Any
+from typing_extensions import Callable
 
 from ... import utils
-from ..translator.translator import Translator
+from ...logger import LOGGER
 from ...types.noro6 import Fleet
 from ...types.noro6 import FleetInfo
-
-from ...logger import LOGGER
+from ..translator.translator import Translator
 
 
 class _ORDER_EQUIPMENT_TRANSLATE(IntEnum):

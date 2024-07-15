@@ -3,23 +3,24 @@ from dataclasses import dataclass
 from pydantic import ValidationError
 from typing_extensions import cast
 
-from .. import const
-from ..const import FleetType, FormationType
-
-from ..deck_builder import (
-    DeckBuilderData,
-    DeckBuilderFleet,
-    DeckBuilderShip,
-    DeckBuilderEquipment,
-)
-from .item import Item, ItemBuilder, ItemMaster
-from .fleet import Fleet, FleetBuilder
-from .fleet import Ship, ShipBuilder, ShipMaster
-
-
-from .fleet import FleetInfo, FleetInfoBuilder
-
 from ...logger import LOGGER
+from .. import const
+from ..const import FleetType
+from ..const import FormationType
+from ..deck_builder import DeckBuilderData
+from ..deck_builder import DeckBuilderEquipment
+from ..deck_builder import DeckBuilderFleet
+from ..deck_builder import DeckBuilderShip
+from .fleet import Fleet
+from .fleet import FleetBuilder
+from .fleet import FleetInfo
+from .fleet import FleetInfoBuilder
+from .fleet import Ship
+from .fleet import ShipBuilder
+from .fleet import ShipMaster
+from .item import Item
+from .item import ItemBuilder
+from .item import ItemMaster
 
 
 @dataclass(slots=True)

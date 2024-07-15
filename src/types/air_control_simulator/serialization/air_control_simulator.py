@@ -1,8 +1,11 @@
-from pydantic import BaseModel, Field
-from typing_extensions import Iterable, Optional
+from pydantic import BaseModel
+from pydantic import Field
+from typing_extensions import Iterable
+from typing_extensions import Optional
 
 from ...deck_builder import DeckBuilderData
-from ...fleet_analysis import FleetAnalysisShip, FleetAnalysisEquipment
+from ...fleet_analysis import FleetAnalysisEquipment
+from ...fleet_analysis import FleetAnalysisShip
 
 
 class AirControlSimulator(BaseModel):

@@ -1,14 +1,17 @@
 from __future__ import annotations
 
 import math
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
-from dataclasses import dataclass, field, InitVar
+from typing_extensions import MutableSequence
+from typing_extensions import Optional
+from typing_extensions import Sequence
 
-from typing_extensions import MutableSequence, Sequence, Optional
-
-from .item_master import ItemMaster
-from ..interface import ContactRate
 from ...const import EquipmentTypes
+from ..interface import ContactRate
+from .item_master import ItemMaster
 
 
 @dataclass(slots=True)

@@ -1,7 +1,8 @@
-from enum import IntEnum
 from dataclasses import dataclass
+from enum import IntEnum
 
-from typing_extensions import MutableSequence, TypedDict
+from typing_extensions import MutableSequence
+from typing_extensions import TypedDict
 
 
 class FleetType(IntEnum):

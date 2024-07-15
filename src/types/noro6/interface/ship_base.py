@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from abc import ABC
-from dataclasses import dataclass, InitVar
+from dataclasses import InitVar
+from dataclasses import dataclass
 
-from typing_extensions import Any, TYPE_CHECKING
+from typing_extensions import TYPE_CHECKING
+from typing_extensions import Any
 
 if TYPE_CHECKING:
     from ..aerial_combat import AntiAirCutIn
-    from ..item import Item, ItemBonusStatus
-
     from ..enemy import EnemyMaster
     from ..fleet import ShipMaster
+    from ..item import Item
+    from ..item import ItemBonusStatus
 
 
 @dataclass(slots=True)

@@ -1,6 +1,9 @@
 import string
 
-from typing_extensions import Any, Callable, Sequence, TypeVar
+from typing_extensions import Any
+from typing_extensions import Callable
+from typing_extensions import Sequence
+from typing_extensions import TypeVar
 
 _T = TypeVar("_T")
 

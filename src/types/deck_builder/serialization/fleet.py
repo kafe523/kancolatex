@@ -1,8 +1,10 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
 from typing_extensions import Optional
 
-from .ship import DeckBuilderShip
 from ...const import FleetType
+from .ship import DeckBuilderShip
 
 
 class DeckBuilderFleet(BaseModel):

@@ -1,12 +1,14 @@
 import math
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
-from dataclasses import dataclass, field, InitVar
-
-from typing_extensions import Optional, Sequence
+from typing_extensions import Optional
+from typing_extensions import Sequence
 
 from ... import const
-
-from ...const import Formation, AvoidType
+from ...const import AvoidType
+from ...const import Formation
 from ..interface import ShipBase
 from .anti_air_cut_in import AntiAirCutIn
 

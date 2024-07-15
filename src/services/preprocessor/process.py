@@ -1,15 +1,21 @@
-from dataclasses import dataclass, field
-from io import StringIO, TextIOWrapper
+from dataclasses import dataclass
+from dataclasses import field
+from io import StringIO
+from io import TextIOWrapper
 from string import Formatter
 
-from pydantic import BaseModel, ValidationError
-from typing_extensions import Optional, Sequence
-
-from ..translator.translator import Translator
-from .macro import isValidMacro, attrAccess, PreDefineMacro, MacroValueType
-from ...types.noro6 import FleetInfo
+from pydantic import BaseModel
+from pydantic import ValidationError
+from typing_extensions import Optional
+from typing_extensions import Sequence
 
 from ...logger import LOGGER
+from ...types.noro6 import FleetInfo
+from ..translator.translator import Translator
+from .macro import MacroValueType
+from .macro import PreDefineMacro
+from .macro import attrAccess
+from .macro import isValidMacro
 
 
 class _DefineConfig(BaseModel):

@@ -1,9 +1,12 @@
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
-from typing_extensions import Any, Literal, Optional
+from typing_extensions import Any
+from typing_extensions import Literal
+from typing_extensions import Optional
 
 from ...database import DATABASE
-
 from ...logger import LOGGER
 
 

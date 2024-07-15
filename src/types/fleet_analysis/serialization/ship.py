@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 from typing_extensions import Iterable
 
-from .special_effect_item import FleetAnalysisSpecialEffectItem
 from ...ship_id import ShipId
+from .special_effect_item import FleetAnalysisSpecialEffectItem
 
 
 class FleetAnalysisShip(BaseModel):

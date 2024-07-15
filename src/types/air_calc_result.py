@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
+from dataclasses import field
 
-from dataclasses import dataclass, field
-
-from . import const
 from .. import utils
+from . import const
 
 
 @dataclass(slots=True)

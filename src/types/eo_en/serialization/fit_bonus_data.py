@@ -1,9 +1,13 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 from typing_extensions import Optional
 
-from . import FitBonusValue
-from ... import EquipmentId, ShipId
-from ...const import EquipmentTypes, CountryType
+from ...const import CountryType
+from ...const import EquipmentTypes
+from ...equipment_id import EquipmentId
+from ...ship_id import ShipId
+from .fit_bonus_value import FitBonusValue
+
 
 class FitBonusData(BaseModel):
     shipClass: Optional[list[int]] = Field(alias="shipClass", default=None)

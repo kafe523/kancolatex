@@ -1,15 +1,14 @@
 from dataclasses import dataclass
 
-from pydantic import TypeAdapter, ValidationError
-from typing_extensions import (
-    Generic,
-    MutableSequence,
-    NotRequired,
-    Optional,
-    TypeAlias,
-    TypeVar,
-    TypedDict,
-)
+from pydantic import TypeAdapter
+from pydantic import ValidationError
+from typing_extensions import Generic
+from typing_extensions import MutableSequence
+from typing_extensions import NotRequired
+from typing_extensions import Optional
+from typing_extensions import TypeAlias
+from typing_extensions import TypedDict
+from typing_extensions import TypeVar
 
 from ....logger import LOGGER
 

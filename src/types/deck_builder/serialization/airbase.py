@@ -1,8 +1,9 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 from typing_extensions import Optional
 
-from .airbase_equipment import DeckBuilderAirBaseEquipmentList
 from ...const import AIR_STATE
+from .airbase_equipment import DeckBuilderAirBaseEquipmentList
 
 
 class DeckBuilderAirBase(BaseModel):

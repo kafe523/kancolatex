@@ -1,12 +1,12 @@
 import math
 import random
-
 from dataclasses import dataclass
 
 from typing_extensions import MutableSequence
 
 from ...types import ItemMaster
-from ...types.const import AIR_STATE, PROF_LEVEL_BORDER
+from ...types.const import AIR_STATE
+from ...types.const import PROF_LEVEL_BORDER
 
 
 def getAirStatusBorder(airPower: int) -> tuple[int, int, int, int]:

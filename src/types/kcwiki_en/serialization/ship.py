@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
-from .ship_equipment import KcwikiShipEquipment
 from ...ship_id import ShipId
+from .ship_equipment import KcwikiShipEquipment
 
 
 class KcwikiShip(BaseModel):

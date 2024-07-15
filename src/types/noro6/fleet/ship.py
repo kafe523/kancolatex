@@ -2,23 +2,28 @@ from __future__ import annotations
 
 import copy
 import math
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
-from dataclasses import dataclass, InitVar, field
-
-from typing_extensions import Optional, Sequence, TypedDict
+from typing_extensions import Optional
+from typing_extensions import Sequence
+from typing_extensions import TypedDict
 
 from .... import utils
-
-from .ship_master import ShipMaster
-from ..item import Item, ItemBuilder
-from ... import const
-from ...const import FleetType, ShipType
-from ..aerial_combat import AntiAirCutIn
-from ..interface import ShipBase
-from ..aerial_combat import ShootDownInfo
-from ..item import ItemBonusStatus, getTotalBonus, bonusData
-
 from ....logger import LOGGER
+from ... import const
+from ...const import FleetType
+from ...const import ShipType
+from ..aerial_combat import AntiAirCutIn
+from ..aerial_combat import ShootDownInfo
+from ..interface import ShipBase
+from ..item import Item
+from ..item import ItemBonusStatus
+from ..item import ItemBuilder
+from ..item import bonusData
+from ..item import getTotalBonus
+from .ship_master import ShipMaster
 
 
 @dataclass(slots=True)

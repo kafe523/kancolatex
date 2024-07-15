@@ -1,6 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 from ...const import SpEffectItemKind
+
 
 class FleetAnalysisSpecialEffectItem(BaseModel):
     apiKind: SpEffectItemKind = Field(alias="api_kind")

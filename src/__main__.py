@@ -1,19 +1,17 @@
 import argparse
 import json
 import sys
-
-
 from dataclasses import dataclass
 from io import TextIOWrapper
 
 from typing_extensions import Sequence
 
 from . import database
-from .services.translator.translator import TranslatorBuilder, Translator
-from .services.preprocessor.process import Process
-from .types import Convert
-
 from .logger import LOGGER
+from .services.preprocessor.process import Process
+from .services.translator.translator import Translator
+from .services.translator.translator import TranslatorBuilder
+from .types import Convert
 
 
 def argumentParser() -> argparse.ArgumentParser:

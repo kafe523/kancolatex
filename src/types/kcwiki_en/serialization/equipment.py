@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, Field, SkipValidation
-from typing_extensions import Any, Optional
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from pydantic import SkipValidation
+from typing_extensions import Any
+from typing_extensions import Optional
 
-from ...equipment_id import EquipmentId
 from ...const import EquipmentTypes
+from ...equipment_id import EquipmentId
 
 
 class KcwikiEquipment(BaseModel):

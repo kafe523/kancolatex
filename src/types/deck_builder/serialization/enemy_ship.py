@@ -1,7 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
-from .enemy_equipment import DeckBuilderEnemyEquipment
 from ...ship_id import ShipId
+from .enemy_equipment import DeckBuilderEnemyEquipment
 
 
 class DeckBuilderEnemyShip(BaseModel):

@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from dataclasses import field
 
-from . import FitBonusData, FitBonusValue
-from .. import EquipmentId
 from ..const import EquipmentTypes
+from ..equipment_id import EquipmentId
+from .serialization import FitBonusData
+from .serialization import FitBonusValue
+
 
 @dataclass(slots=True)
 class FitBonusResult:

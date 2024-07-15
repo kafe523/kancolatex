@@ -1,23 +1,27 @@
 from __future__ import annotations
 
 import math
-
-from dataclasses import dataclass, field, InitVar
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
 from typing_extensions import Sequence
 
-from .ship import Ship, ShipBuilder
+from .... import utils
+from ....logger import LOGGER
 from ... import const
-from ...const import AvoidType, FormationType, Formation, ShipType, SUPPORT_TYPE
-from ..item import Item
 from ...air_calc_result import AirCalcResult
+from ...const import SUPPORT_TYPE
+from ...const import AvoidType
+from ...const import Formation
+from ...const import FormationType
+from ...const import ShipType
 from ..aerial_combat import AntiAirCutIn
 from ..aerial_combat import ShootDownInfo
 from ..interface import ContactRate
-
-from .... import utils
-
-from ....logger import LOGGER
+from ..item import Item
+from .ship import Ship
+from .ship import ShipBuilder
 
 
 @dataclass(slots=True)

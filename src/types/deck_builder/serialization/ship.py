@@ -1,9 +1,12 @@
-from pydantic import BaseModel, ConfigDict, Field
-from typing_extensions import Optional, Sequence
+from pydantic import BaseModel
+from pydantic import ConfigDict
+from pydantic import Field
+from typing_extensions import Optional
+from typing_extensions import Sequence
 
+from ...ship_id import ShipId
 from .equipment_list import DeckBuilderEquipmentList
 from .special_effect_item import DeckBuilderSpecialEffectItem
-from ...ship_id import ShipId
 
 
 class DeckBuilderShip(BaseModel):
