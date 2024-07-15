@@ -6,6 +6,8 @@ import sys
 from dataclasses import dataclass
 from io import TextIOWrapper
 
+from typing_extensions import Sequence
+
 from . import database
 from .services.translator.translator import TranslatorBuilder, Translator
 from .services.preprocessor.process import Process
@@ -90,9 +92,10 @@ _SUCCESS = 0
 _ERROR = 1
 
 
-def main():
+def main(argv:Sequence[str] | None = None):
+
     parser = argumentParser()
-    args = Args(**vars(parser.parse_args()))
+    args = Args(**vars(parser.parse_args(argv)))
 
     LOGGER.debug(f"{args = }")
 
