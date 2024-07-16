@@ -287,100 +287,9 @@ class PreDefineMacro:
         self._macroLookUpCache = {}
         self._latexLookUpCache = {}
 
-        def _template(
-            _pos: str,
-            _latex: str,
-            _macro: str,
-            _access: str,
-            _default: str = "",
-            _functionWrapper: Callable[[Any], str] | None = None,
-        ):
-            _latex = _latex.format(_pos)
-            _macro = _macro.format(_pos)
-            _access = _access.format(_pos)
-            try:
-                _attrAccessResult = self._attrAccess(
-                    Macro(_access, MacroValueType.ATTRIBUTE_ACCESS)
-                )
-                _accessResult = (
-                    _attrAccessResult
-                    if _functionWrapper is None
-                    else _functionWrapper(_attrAccessResult)
-                )
-                LOGGER.debug(f"{_accessResult = }")
-                self._macroLookUpCache.update({_macro: _accessResult})
-                self._latexLookUpCache.update({_latex: _accessResult})
-            except IndexError as e:
-                LOGGER.debug(f"{e = } {_pos = }")
-                self._macroLookUpCache.update({_macro: _default})
-                self._latexLookUpCache.update({_latex: _default})
-
-        for fleetPos in {"A", "B", "C", "D", "U"}:
-            LOGGER.debug(f"{fleetPos = }")
-
-            for losPos in {"A", "B", "C", "D"}:
-                _template(
-                    losPos,
-                    rf"\fleet{fleetPos}los{{}}",
-                    f"FLEET_{fleetPos}_LOS_{{}}",
-                    f"Fleet.{fleetPos}.los.{{}}",
-                    _functionWrapper=lambda v: str(
-                        math.floor(100 * utils.convert(v, float, 0)) / 100
-                    ),
-                )
-            _template(
-                fleetPos,
-                r"\fleet{}fullAirPower",
-                "FLEET_{}_FULL_AIRPOWER",
-                "Fleet.{}.fullAirPower",
-            )
-
-        for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
-            LOGGER.debug(f"{shipPos = }")
-            _template(shipPos, r"\ship{}nameJp", "SHIP_{}_NAME_JP", "Ship.{}.data.name")
-            _template(
-                shipPos,
-                r"\ship{}nameEn",
-                "SHIP_{}_NAME_EN",
-                "Ship.{}.data.name",
-                _functionWrapper=self.translator.translate_ship,
-            )
-            _template(shipPos, r"\ship{}level", "SHIP_{}_LEVEL", "Ship.{}.level")
-            _template(
-                shipPos,
-                r"\ship{}fullAirPower",
-                "SHIP_{}_FULL_AIRPOWER",
-                "Ship.{}.fullAirPower",
-            )
-
-            for equipmentPos in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET:
-                LOGGER.debug(f"{equipmentPos = }")
-
-                _template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}nameJp",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_JP",
-                    f"Ship.{shipPos}.equipment.{{}}.data.name",
-                )
-                _template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}nameEn",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_EN",
-                    f"Ship.{shipPos}.equipment.{{}}.data.name",
-                    _functionWrapper=self.translator.translate_equipment,
-                )
-                _template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}remodel",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_REMODEL",
-                    f"Ship.{shipPos}.equipment.{{}}.remodel",
-                )
-                _template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}levelAlt",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_LEVEL_ALT",
-                    f"Ship.{shipPos}.equipment.{{}}.levelAlt",
-                )
+        self._define_fleet()
+        self._define_ship()
+        self._define_equipment()
 
     @property
     def macroLookUp(self) -> dict[str, str]:
@@ -392,3 +301,114 @@ class PreDefineMacro:
 
     def _attrAccess(self, macro: Macro):
         return attrAccess(self.fleetInfo, macro)
+
+    def _define_template(
+        self,
+        _pos: str,
+        _latex: str,
+        _macro: str,
+        _access: str,
+        _default: str = "",
+        _functionWrapper: Callable[[Any], str] | None = None,
+    ):
+        _latex = _latex.format(_pos)
+        _macro = _macro.format(_pos)
+        _access = _access.format(_pos)
+        try:
+            _attrAccessResult = self._attrAccess(
+                Macro(_access, MacroValueType.ATTRIBUTE_ACCESS)
+            )
+            _accessResult = (
+                _attrAccessResult
+                if _functionWrapper is None
+                else _functionWrapper(_attrAccessResult)
+            )
+            LOGGER.debug(f"{_accessResult = }")
+            self._macroLookUpCache.update({_macro: _accessResult})
+            self._latexLookUpCache.update({_latex: _accessResult})
+        except IndexError as e:
+            LOGGER.debug(f"{e = } {_pos = }")
+            self._macroLookUpCache.update({_macro: _default})
+            self._latexLookUpCache.update({_latex: _default})
+
+    def _define_fleet(self):
+        for fleetPos in ("A", "B", "C", "D", "U"):
+            LOGGER.debug(f"{fleetPos = }")
+
+            for losPos in ("A", "B", "C", "D"):
+                LOGGER.debug(f"{losPos = }")
+
+                self._define_template(
+                    losPos,
+                    rf"\fleet{fleetPos}los{{}}",
+                    f"FLEET_{fleetPos}_LOS_{{}}",
+                    f"Fleet.{fleetPos}.los.{{}}",
+                    _functionWrapper=lambda v: str(
+                        math.floor(100 * utils.convert(v, float, 0)) / 100
+                    ),
+                )
+
+            self._define_template(
+                fleetPos,
+                r"\fleet{}fullAirPower",
+                "FLEET_{}_FULL_AIRPOWER",
+                "Fleet.{}.fullAirPower",
+            )
+
+    def _define_ship(self):
+        for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
+            LOGGER.debug(f"{shipPos = }")
+
+            self._define_template(
+                shipPos, r"\ship{}nameJp", "SHIP_{}_NAME_JP", "Ship.{}.data.name"
+            )
+            self._define_template(
+                shipPos,
+                r"\ship{}nameEn",
+                "SHIP_{}_NAME_EN",
+                "Ship.{}.data.name",
+                _functionWrapper=self.translator.translate_ship,
+            )
+            self._define_template(
+                shipPos, r"\ship{}level", "SHIP_{}_LEVEL", "Ship.{}.level"
+            )
+            self._define_template(
+                shipPos,
+                r"\ship{}fullAirPower",
+                "SHIP_{}_FULL_AIRPOWER",
+                "Ship.{}.fullAirPower",
+            )
+
+    def _define_equipment(self):
+        for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
+            LOGGER.debug(f"{shipPos = }")
+
+            for equipmentPos in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET:
+
+                LOGGER.debug(f"{equipmentPos = }")
+
+                self._define_template(
+                    equipmentPos,
+                    rf"\ship{shipPos}equipment{{}}nameJp",
+                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_JP",
+                    f"Ship.{shipPos}.equipment.{{}}.data.name",
+                )
+                self._define_template(
+                    equipmentPos,
+                    rf"\ship{shipPos}equipment{{}}nameEn",
+                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_EN",
+                    f"Ship.{shipPos}.equipment.{{}}.data.name",
+                    _functionWrapper=self.translator.translate_equipment,
+                )
+                self._define_template(
+                    equipmentPos,
+                    rf"\ship{shipPos}equipment{{}}remodel",
+                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_REMODEL",
+                    f"Ship.{shipPos}.equipment.{{}}.remodel",
+                )
+                self._define_template(
+                    equipmentPos,
+                    rf"\ship{shipPos}equipment{{}}levelAlt",
+                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_LEVEL_ALT",
+                    f"Ship.{shipPos}.equipment.{{}}.levelAlt",
+                )
