@@ -20,7 +20,7 @@ test = ["pytest"]
 dev = ["kancolatex[test]", "isort >= 5.13.2"]
 
 [project.scripts]
-kancolatex = "src.__main__:main"
+kancolatex = "src.kancolatex.__main__:main"
 
 [tool.setuptools.packages.find]
 exclude = ["tests"]
