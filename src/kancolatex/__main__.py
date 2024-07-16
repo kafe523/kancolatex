@@ -102,10 +102,11 @@ def main(argv: Sequence[str] | None = None):
 
     if args.debug:
         LOGGER.setLevel(logging.DEBUG)
+        setattr(_parsedResult, "debug", False)
 
     LOGGER.debug(f"{args = }")
 
-    if all(k != "--debug" and not v for k, v in vars(_parsedResult).items()):
+    if all(not v for v in vars(_parsedResult).values()):
         parser.print_help()
 
     if args.reset:

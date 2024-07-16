@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools>=60"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -17,13 +17,22 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["pytest"]
-dev = ["kancolatex[test]", "isort >= 5.13.2"]
+dev = [
+    "kancolatex[test]",
+    "isort >= 5.13.2",
+    "build >= 1.2.1",
+    "twine >= 5.1.1",
+]
 
 [project.scripts]
-kancolatex = "src.kancolatex.__main__:main"
+kancolatex = "kancolatex.__main__:main"
 
 [tool.setuptools.packages.find]
-exclude = ["tests"]
+where = ["src"]
+exclude = ["tests*"]
+
+[tool.setuptools.package-data]
+"kancolatex.data" = ["**"]
 
 [tool.isort]
 py_version = 310
