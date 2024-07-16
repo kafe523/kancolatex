@@ -1,5 +1,6 @@
 import argparse
 import json
+import logging
 import sys
 from dataclasses import dataclass
 from io import TextIOWrapper
@@ -56,6 +57,8 @@ def argumentParser() -> argparse.ArgumentParser:
         help="reset the database. Old record will be missing.",
     )
 
+    parser.add_argument("--debug", action="store_true", help="enable debug message")
+
     parser.add_argument(
         "-tse",
         "--translation-ships-en",
@@ -82,6 +85,7 @@ class Args:
     output: TextIOWrapper | None
     update: bool
     reset: bool
+    debug: bool
     translation_ships_en: TextIOWrapper | None
     translation_equipments_en: TextIOWrapper | None
 
@@ -93,11 +97,15 @@ _ERROR = 1
 def main(argv: Sequence[str] | None = None):
 
     parser = argumentParser()
-    args = Args(**vars(parser.parse_args(argv)))
+    _parsedResult = parser.parse_args(argv)
+    args = Args(**vars(_parsedResult))
+
+    if args.debug:
+        LOGGER.setLevel(logging.DEBUG)
 
     LOGGER.debug(f"{args = }")
 
-    if all(not v for v in vars(parser.parse_args()).values()):
+    if all(k != "--debug" and not v for k, v in vars(_parsedResult).items()):
         parser.print_help()
 
     if args.reset:
