@@ -6,6 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "kancolatex"
 version = "0.0.3"
 license = { file = "LICENSE" }
+description = "A command line tool generate LaTex template from Kancolle Deck Builder."
+readme = "README.md"
 
 requires-python = ">=3.10"
 dependencies = [
