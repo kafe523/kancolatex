@@ -5,7 +5,7 @@ from dataclasses import field
 
 from ... import const
 from ...const import EquipmentTypes
-from ...ship_id import ShipId
+from ...equipment_id import EquipmentId
 from ..interface import MasterItem
 
 
@@ -17,7 +17,7 @@ class _Bonuses:
 
 @dataclass(slots=True)
 class ItemMaster:
-    id: ShipId = 0
+    id: EquipmentId = 0
     apiTypeId: EquipmentTypes = EquipmentTypes.UNKNOWN
     iconTypeId: int = 0
     name: str = ""
