@@ -13,6 +13,7 @@ from ...logger import LOGGER
 from ...types.noro6 import FleetInfo
 from ..translator.translator import Translator
 from .macro import MacroValueType
+from .macro import OrderTranslate
 from .macro import PreDefineMacro
 from .macro import attrAccess
 from .macro import isValidMacro
@@ -46,6 +47,8 @@ class Process:
             self.translator if self.translator else Translator(builder=None),
         )
         self._defineTable.update(self._preDefineMacro.latexLoopUp)
+
+        self._custom_DefineConfigValue()
 
         LOGGER.debug(f"{self._defineTable = }")
         LOGGER.debug(f"{tuple(sorted(self._defineTable)) = }")
@@ -208,3 +211,65 @@ class Process:
         LOGGER.debug(f"{defineConfig.name = }")
         LOGGER.debug(f"{self._defineTable[defineConfig.name] = }")
         return True
+
+    def _custom_DefineConfigValue(self):
+        for shipPos in OrderTranslate.shipName():
+            self._eval_DefineConfigParams(
+                _DefineConfig(
+                    name="".join((r"\kk", shipPos, "{}")),
+                    template="".join((r"\kl", shipPos, r"{{{0}, {1}, {2}, {3}}}")),
+                    param=(
+                        f"<SHIP_{shipPos}_ID>",
+                        f"<SHIP_{shipPos}_NAME_EN>",
+                        f"<SHIP_{shipPos}_LEVEL>",
+                        f"<SHIP_{shipPos}_DISPLAYSTATUS_LUCK>",
+                    ),
+                )
+            )
+
+            for equipmentPos in OrderTranslate.equipmentName():
+                if equipmentPos == "X":
+                    self._eval_DefineConfigParams(
+                        _DefineConfig(
+                            name="".join((r"\kk", shipPos, equipmentPos)),
+                            template="".join(
+                                (
+                                    r"\kl",
+                                    shipPos,
+                                    equipmentPos,
+                                    r"{{{0}, {1}, {2}, {3}, {4}}}",
+                                )
+                            ),
+                            param=(
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_EQUIPPED>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ICONID>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_NAME_EN>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_REMODEL>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ID>",
+                            ),
+                        )
+                    )
+
+                    continue
+
+                self._eval_DefineConfigParams(
+                    _DefineConfig(
+                        name="".join((r"\kk", shipPos, equipmentPos)),
+                        template="".join(
+                            (
+                                r"\kl",
+                                shipPos,
+                                equipmentPos,
+                                r"{{{0}, {1}, {2}, {3}, {4}, {5}}}",
+                            )
+                        ),
+                        param=(
+                            f"<SHIP_{shipPos}_SLOT_{equipmentPos}>",
+                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ICONID>",
+                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_NAME_EN>",
+                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_REMODEL>",
+                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_LEVEL_ALT>",
+                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ID>",
+                        ),
+                    )
+                )

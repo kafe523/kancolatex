@@ -13,6 +13,7 @@ from typing_extensions import Callable
 
 from ... import utils
 from ...logger import LOGGER
+from ...types.const import EquipmentTypes
 from ...types.noro6 import Fleet
 from ...types.noro6 import FleetInfo
 from ..translator.translator import Translator
@@ -82,6 +83,57 @@ _ORDER_SHIP_TRANSLATE_SET = {
 }
 
 
+@dataclass(slots=True)
+class OrderTranslate:
+    @staticmethod
+    def equipment(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_SET))
+            if toTuple
+            else _ORDER_EQUIPMENT_TRANSLATE_SET
+        )
+
+    @staticmethod
+    def equipmentName(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_NAME_SET))
+            if toTuple
+            else _ORDER_EQUIPMENT_TRANSLATE_NAME_SET
+        )
+
+    @staticmethod
+    def equipmentValue(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_VALUE_SET))
+            if toTuple
+            else _ORDER_EQUIPMENT_TRANSLATE_VALUE_SET
+        )
+
+    @staticmethod
+    def ship(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_SHIP_TRANSLATE_SET))
+            if toTuple
+            else _ORDER_SHIP_TRANSLATE_SET
+        )
+
+    @staticmethod
+    def shipName(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_SHIP_TRANSLATE_NAME_SET))
+            if toTuple
+            else _ORDER_SHIP_TRANSLATE_NAME_SET
+        )
+
+    @staticmethod
+    def shipValue(toTuple: bool = True) -> tuple[str, ...] | set[str]:
+        return (
+            tuple(sorted(_ORDER_SHIP_TRANSLATE_VALUE_SET))
+            if toTuple
+            else _ORDER_SHIP_TRANSLATE_VALUE_SET
+        )
+
+
 class MacroValueType(Enum):
     MNEMONIC = auto()
     ATTRIBUTE_ACCESS = auto()
@@ -92,16 +144,6 @@ class MacroValueType(Enum):
 class Macro:
     value: str = ""
     type: MacroValueType = MacroValueType.UNKNOWN
-
-    def eval(self) -> str:
-        result: str = self.value
-
-        if self.type is MacroValueType.MNEMONIC:
-            ...
-        elif self.type is MacroValueType.ATTRIBUTE_ACCESS:
-            ...
-
-        return result
 
 
 def isValidMacro(val: str) -> Macro | None:
@@ -171,6 +213,31 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
             )
 
             match attrs:
+                case ["slot", equipmentPosRaw] if equipmentPosRaw in {
+                    v for v in _ORDER_EQUIPMENT_TRANSLATE_SET if not (v in {"X", "99"})
+                }:
+                    equipmentPos = (
+                        getattr(_ORDER_EQUIPMENT_TRANSLATE, equipmentPosRaw)
+                        if equipmentPosRaw in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET
+                        else _ORDER_EQUIPMENT_TRANSLATE(int(equipmentPosRaw))
+                    )
+                    LOGGER.debug(f"{equipmentPos = }")
+
+                    _r = None
+
+                    LOGGER.debug(f"{targetShip.data.slots = }")
+
+                    try:
+                        targetSlot = targetShip.data.slots[equipmentPos]
+                    except IndexError as e:
+                        LOGGER.debug(f"{e = }")
+                        targetSlot = None
+
+                    LOGGER.debug(f"{targetSlot = }")
+
+                    _r = str(targetSlot) if isinstance(targetSlot, int) else None
+                    result = _r if _r is not None else ""
+
                 case [
                     "equipment",
                     equipmentPosRaw,
@@ -205,6 +272,8 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
 
                     if _r is not None:
                         result = str(_r) if not isinstance(_r, str) else _r
+                        if isinstance(_r, EquipmentTypes):
+                            result = str(_r.value)
                         LOGGER.debug(f"{result = }")
                 case _:
                     _r = None
@@ -335,14 +404,19 @@ class PreDefineMacro:
         for fleetPos in ("A", "B", "C", "D", "U"):
             LOGGER.debug(f"{fleetPos = }")
 
+            def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
+                return (
+                    rf"\fleet{fleetPos}{_l}",
+                    f"FLEET_{fleetPos}_{_m}",
+                    f"Fleet.{fleetPos}.{_a}",
+                )
+
             for losPos in ("A", "B", "C", "D"):
                 LOGGER.debug(f"{losPos = }")
 
                 self._define_template(
                     losPos,
-                    rf"\fleet{fleetPos}los{{}}",
-                    f"FLEET_{fleetPos}_LOS_{{}}",
-                    f"Fleet.{fleetPos}.los.{{}}",
+                    *_base(r"los{}", r"LOS_{}", r"los.{}"),
                     _functionWrapper=lambda v: str(
                         math.floor(100 * utils.convert(v, float, 0)) / 100
                     ),
@@ -350,65 +424,182 @@ class PreDefineMacro:
 
             self._define_template(
                 fleetPos,
-                r"\fleet{}fullAirPower",
-                "FLEET_{}_FULL_AIRPOWER",
-                "Fleet.{}.fullAirPower",
+                *_base("fullAirPower", "FULL_AIRPOWER", "fullAirPower"),
             )
 
     def _define_ship(self):
         for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
+
+            def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
+                return (
+                    rf"\ship{{}}{_l}",
+                    f"SHIP_{{}}_{_m}",
+                    f"Ship.{{}}.{_a}",
+                )
+
             LOGGER.debug(f"{shipPos = }")
 
-            self._define_template(
-                shipPos, r"\ship{}nameJp", "SHIP_{}_NAME_JP", "Ship.{}.data.name"
-            )
+            self._define_template(shipPos, *_base("nameJp", "NAME_JP", "data.name"))
             self._define_template(
                 shipPos,
-                r"\ship{}nameEn",
-                "SHIP_{}_NAME_EN",
-                "Ship.{}.data.name",
+                *_base("nameEn", "NAME_EN", "data.name"),
                 _functionWrapper=self.translator.translate_ship,
             )
+            self._define_template(shipPos, *_base("level", "LEVEL", "level"))
             self._define_template(
-                shipPos, r"\ship{}level", "SHIP_{}_LEVEL", "Ship.{}.level"
+                shipPos, *_base("fullAirPower", "FULL_AIRPOWER", "fullAirPower")
+            )
+
+            self._define_template(shipPos, *_base("id", "ID", "data.id"))
+
+            # Display Status
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusHp",
+                    "DISPLAYSTATUS_HP",
+                    "displayStatus.HP",
+                ),
             )
             self._define_template(
                 shipPos,
-                r"\ship{}fullAirPower",
-                "SHIP_{}_FULL_AIRPOWER",
-                "Ship.{}.fullAirPower",
+                *_base(
+                    "displayStatusFirePower",
+                    "DISPLAYSTATUS_FIREFPOWER",
+                    "displayStatus.firePower",
+                ),
             )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusArmor",
+                    "DISPLAYSTATUS_ARMOR",
+                    "displayStatus.armor",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusTorpedo",
+                    "DISPLAYSTATUS_TORPEDO",
+                    "displayStatus.torpedo",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusAvoid",
+                    "DISPLAYSTATUS_AVOID",
+                    "displayStatus.avoid",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    r"displayStatusAntiAir",
+                    "DISPLAYSTATUS_ANTIAIR",
+                    "displayStatus.antiAir",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusAsw",
+                    "DISPLAYSTATUS_ASW",
+                    "displayStatus.asw",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    r"displayStatusLos",
+                    "DISPLAYSTATUS_LOS",
+                    "displayStatus.LoS",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusLuck",
+                    "DISPLAYSTATUS_LUCK",
+                    "displayStatus.luck",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusRange",
+                    "DISPLAYSTATUS_RANGE",
+                    "displayStatus.range",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusAccuracy",
+                    "DISPLAYSTATUS_ACCURACY",
+                    "displayStatus.accuracy",
+                ),
+            )
+            self._define_template(
+                shipPos,
+                *_base(
+                    "displayStatusBomber",
+                    "DISPLAYSTATUS_BOMBER",
+                    "displayStatus.bomber",
+                ),
+            )
+
+            for equipmentPos in {
+                v for v in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET if v != "X"
+            }:
+                self._define_template(
+                    shipPos,
+                    *_base(
+                        f"slot{equipmentPos}",
+                        f"SLOT_{equipmentPos}",
+                        f"slot.{equipmentPos}",
+                    ),
+                )
 
     def _define_equipment(self):
         for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
             LOGGER.debug(f"{shipPos = }")
+
+            def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
+                return (
+                    rf"\ship{shipPos}equipment{{}}{_l}",
+                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_{_m}",
+                    f"Ship.{shipPos}.equipment.{{}}.{_a}",
+                )
 
             for equipmentPos in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET:
 
                 LOGGER.debug(f"{equipmentPos = }")
 
                 self._define_template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}nameJp",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_JP",
-                    f"Ship.{shipPos}.equipment.{{}}.data.name",
+                    equipmentPos, *_base("nameJp", "NAME_JP", "data.name")
                 )
                 self._define_template(
                     equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}nameEn",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_NAME_EN",
-                    f"Ship.{shipPos}.equipment.{{}}.data.name",
+                    *_base("nameEn", f"NAME_EN", f"data.name"),
                     _functionWrapper=self.translator.translate_equipment,
                 )
                 self._define_template(
-                    equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}remodel",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_REMODEL",
-                    f"Ship.{shipPos}.equipment.{{}}.remodel",
+                    equipmentPos, *_base("remodel", f"REMODEL", f"remodel")
+                )
+                self._define_template(
+                    equipmentPos, *_base("levelAlt", "LEVEL_ALT", "levelAlt")
+                )
+                self._define_template(equipmentPos, *_base("id", "ID", "data.id"))
+                self._define_template(
+                    equipmentPos, *_base("typeid", "TYPEID", "data.apiTypeId")
+                )
+                self._define_template(
+                    equipmentPos, *_base("iconid", "ICONID", "data.iconTypeId")
                 )
                 self._define_template(
                     equipmentPos,
-                    rf"\ship{shipPos}equipment{{}}levelAlt",
-                    f"SHIP_{shipPos}_EQUIPMENT_{{}}_LEVEL_ALT",
-                    f"Ship.{shipPos}.equipment.{{}}.levelAlt",
+                    *_base("equipped", "EQUIPPED", "data.id"),
+                    _functionWrapper=lambda v: str(int(bool(int(v)))),
                 )
