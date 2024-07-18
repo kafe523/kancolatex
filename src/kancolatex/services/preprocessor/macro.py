@@ -70,7 +70,7 @@ class OrderTranslate:
 
     @classmethod
     def equipment(cls, _t: type[_OptionT]) -> _OptionT:
-        return _t(*cls.equipmentName(_t), *cls.equipmentValue(_t))
+        return _t((*cls.equipmentName(_t), *cls.equipmentValue(_t)))
 
     @staticmethod
     def equipmentName(_t: type[_OptionT]) -> _OptionT:
@@ -82,7 +82,7 @@ class OrderTranslate:
 
     @classmethod
     def ship(cls, _t: type[_OptionT]) -> _OptionT:
-        return _t(*cls.shipName(_t), *cls.shipValue(_t))
+        return _t((*cls.shipName(_t), *cls.shipValue(_t)))
 
     @staticmethod
     def shipName(_t: type[_OptionT]) -> _OptionT:
