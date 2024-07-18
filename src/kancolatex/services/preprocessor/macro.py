@@ -10,6 +10,7 @@ from enum import auto
 
 from typing_extensions import Any
 from typing_extensions import Callable
+from typing_extensions import TypeVar
 
 from ... import utils
 from ...logger import LOGGER
@@ -32,18 +33,6 @@ class _ORDER_EQUIPMENT_TRANSLATE(IntEnum):
     """Equipment 5"""
     X = 99
     """Equipment Extra Slots"""
-
-
-_ORDER_EQUIPMENT_TRANSLATE_NAME_SET = {
-    k for k in _ORDER_EQUIPMENT_TRANSLATE.__members__.keys()
-}
-_ORDER_EQUIPMENT_TRANSLATE_VALUE_SET = {
-    str(v.value) for v in _ORDER_EQUIPMENT_TRANSLATE
-}
-_ORDER_EQUIPMENT_TRANSLATE_SET = {
-    *_ORDER_EQUIPMENT_TRANSLATE_NAME_SET,
-    *_ORDER_EQUIPMENT_TRANSLATE_VALUE_SET,
-}
 
 
 class _ORDER_SHIP_TRANSLATE(IntEnum):
@@ -75,63 +64,33 @@ class _ORDER_SHIP_TRANSLATE(IntEnum):
     """JTF Escort Fleet 6th Ship"""
 
 
-_ORDER_SHIP_TRANSLATE_NAME_SET = {k for k in _ORDER_SHIP_TRANSLATE.__members__.keys()}
-_ORDER_SHIP_TRANSLATE_VALUE_SET = {str(v.value) for v in _ORDER_SHIP_TRANSLATE}
-_ORDER_SHIP_TRANSLATE_SET = {
-    *_ORDER_SHIP_TRANSLATE_NAME_SET,
-    *_ORDER_SHIP_TRANSLATE_VALUE_SET,
-}
-
-
 @dataclass(slots=True)
 class OrderTranslate:
-    @staticmethod
-    def equipment(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_SET))
-            if toTuple
-            else _ORDER_EQUIPMENT_TRANSLATE_SET
-        )
+    _OptionT = TypeVar("_OptionT", tuple[str, ...], set[str])
+
+    @classmethod
+    def equipment(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(*cls.equipmentName(_t), *cls.equipmentValue(_t))
 
     @staticmethod
-    def equipmentName(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_NAME_SET))
-            if toTuple
-            else _ORDER_EQUIPMENT_TRANSLATE_NAME_SET
-        )
+    def equipmentName(_t: type[_OptionT]) -> _OptionT:
+        return _t(k for k in _ORDER_EQUIPMENT_TRANSLATE.__members__.keys())
 
     @staticmethod
-    def equipmentValue(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_EQUIPMENT_TRANSLATE_VALUE_SET))
-            if toTuple
-            else _ORDER_EQUIPMENT_TRANSLATE_VALUE_SET
-        )
+    def equipmentValue(_t: type[_OptionT]) -> _OptionT:
+        return _t(str(k) for k in _ORDER_EQUIPMENT_TRANSLATE.__members__.values())
+
+    @classmethod
+    def ship(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(*cls.shipName(_t), *cls.shipValue(_t))
 
     @staticmethod
-    def ship(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_SHIP_TRANSLATE_SET))
-            if toTuple
-            else _ORDER_SHIP_TRANSLATE_SET
-        )
+    def shipName(_t: type[_OptionT]) -> _OptionT:
+        return _t(k for k in _ORDER_SHIP_TRANSLATE.__members__.keys())
 
     @staticmethod
-    def shipName(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_SHIP_TRANSLATE_NAME_SET))
-            if toTuple
-            else _ORDER_SHIP_TRANSLATE_NAME_SET
-        )
-
-    @staticmethod
-    def shipValue(toTuple: bool = True) -> tuple[str, ...] | set[str]:
-        return (
-            tuple(sorted(_ORDER_SHIP_TRANSLATE_VALUE_SET))
-            if toTuple
-            else _ORDER_SHIP_TRANSLATE_VALUE_SET
-        )
+    def shipValue(_t: type[_OptionT]) -> _OptionT:
+        return _t(str(k) for k in _ORDER_SHIP_TRANSLATE.__members__.values())
 
 
 class MacroValueType(Enum):
@@ -195,14 +154,14 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
     result: str = ""
 
     match macroSplit := macro.value.split("."):
-        case ["Ship", posRaw, *attrs] if posRaw in _ORDER_SHIP_TRANSLATE_SET and len(
+        case ["Ship", posRaw, *attrs] if posRaw in OrderTranslate.ship(set) and len(
             attrs
         ):
             LOGGER.debug(f"get Ship[{posRaw = }. {attrs = }]")
 
             pos = (
                 getattr(_ORDER_SHIP_TRANSLATE, posRaw)
-                if posRaw in _ORDER_SHIP_TRANSLATE_NAME_SET
+                if posRaw in OrderTranslate.shipName(set)
                 else _ORDER_SHIP_TRANSLATE(int(posRaw))
             )
 
@@ -214,11 +173,11 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
 
             match attrs:
                 case ["slot", equipmentPosRaw] if equipmentPosRaw in {
-                    v for v in _ORDER_EQUIPMENT_TRANSLATE_SET if not (v in {"X", "99"})
+                    v for v in OrderTranslate.equipment(set) if not (v in {"X", "99"})
                 }:
                     equipmentPos = (
                         getattr(_ORDER_EQUIPMENT_TRANSLATE, equipmentPosRaw)
-                        if equipmentPosRaw in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET
+                        if equipmentPosRaw in OrderTranslate.equipmentName(set)
                         else _ORDER_EQUIPMENT_TRANSLATE(int(equipmentPosRaw))
                     )
                     LOGGER.debug(f"{equipmentPos = }")
@@ -242,13 +201,13 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
                     "equipment",
                     equipmentPosRaw,
                     *equipmentAttrs,
-                ] if equipmentPosRaw in _ORDER_EQUIPMENT_TRANSLATE_SET and len(
+                ] if equipmentPosRaw in OrderTranslate.equipment(set) and len(
                     equipmentAttrs
                 ) >= 1:
                     LOGGER.debug(f"{equipmentPosRaw = } {equipmentAttrs = }")
                     equipmentPos = (
                         getattr(_ORDER_EQUIPMENT_TRANSLATE, equipmentPosRaw)
-                        if equipmentPosRaw in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET
+                        if equipmentPosRaw in OrderTranslate.equipmentName(set)
                         else _ORDER_EQUIPMENT_TRANSLATE(int(equipmentPosRaw))
                     )
 
@@ -428,7 +387,7 @@ class PreDefineMacro:
             )
 
     def _define_ship(self):
-        for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
+        for shipPos in OrderTranslate.shipName(tuple):
 
             def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
                 return (
@@ -550,9 +509,9 @@ class PreDefineMacro:
                 ),
             )
 
-            for equipmentPos in {
-                v for v in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET if v != "X"
-            }:
+            for equipmentPos in (
+                v for v in OrderTranslate.equipmentName(tuple) if v != "X"
+            ):
                 self._define_template(
                     shipPos,
                     *_base(
@@ -563,7 +522,7 @@ class PreDefineMacro:
                 )
 
     def _define_equipment(self):
-        for shipPos in _ORDER_SHIP_TRANSLATE_NAME_SET:
+        for shipPos in OrderTranslate.shipName(tuple):
             LOGGER.debug(f"{shipPos = }")
 
             def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
@@ -573,7 +532,7 @@ class PreDefineMacro:
                     f"Ship.{shipPos}.equipment.{{}}.{_a}",
                 )
 
-            for equipmentPos in _ORDER_EQUIPMENT_TRANSLATE_NAME_SET:
+            for equipmentPos in OrderTranslate.equipmentName(set):
 
                 LOGGER.debug(f"{equipmentPos = }")
 

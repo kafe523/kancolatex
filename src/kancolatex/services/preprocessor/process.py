@@ -213,7 +213,7 @@ class Process:
         return True
 
     def _custom_DefineConfigValue(self):
-        for shipPos in OrderTranslate.shipName():
+        for shipPos in OrderTranslate.shipName(tuple):
             self._eval_DefineConfigParams(
                 _DefineConfig(
                     name="".join((r"\kk", shipPos, "{}")),
@@ -227,7 +227,7 @@ class Process:
                 )
             )
 
-            for equipmentPos in OrderTranslate.equipmentName():
+            for equipmentPos in OrderTranslate.equipmentName(tuple):
                 if equipmentPos == "X":
                     self._eval_DefineConfigParams(
                         _DefineConfig(
