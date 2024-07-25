@@ -237,7 +237,7 @@ class Process:
                                     r"\kl",
                                     shipPos,
                                     equipmentPos,
-                                    r"{{{0}, {1}, {2}, {3}, {4}}}",
+                                    r"{{{0}, {1}, {2}, {3}, 0, {4}}}",
                                 )
                             ),
                             param=(
