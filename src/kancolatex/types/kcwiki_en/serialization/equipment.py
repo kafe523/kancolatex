@@ -66,7 +66,7 @@ class KcwikiEquipment(BaseModel):
     page: Optional[bool] = Field(alias="_page", default=None)
     range: bool | int = Field(alias="_range")
     rarity: int = Field(alias="_rarity")
-    reading: bool | None | str = Field(alias="_reading")
+    reading: Optional[bool | None | str] = Field(alias="_reading", default=None)
     scrape_ammo: bool | int = Field(alias="_scrape_ammo", default=False)
     scrape_bauxite: bool | int = Field(alias="_scrape_bauxite", default=False)
     scrape_fuel: bool | int = Field(alias="_scrape_fuel", default=False)
