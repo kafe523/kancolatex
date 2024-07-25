@@ -231,7 +231,7 @@ class Process:
                 if equipmentPos == "X":
                     self._eval_DefineConfigParams(
                         _DefineConfig(
-                            name="".join((r"\kk", shipPos, equipmentPos)),
+                            name="".join((r"\kk", shipPos, equipmentPos, r"{}")),
                             template="".join(
                                 (
                                     r"\kl",
@@ -252,24 +252,25 @@ class Process:
 
                     continue
 
-                self._eval_DefineConfigParams(
-                    _DefineConfig(
-                        name="".join((r"\kk", shipPos, equipmentPos)),
-                        template="".join(
-                            (
-                                r"\kl",
-                                shipPos,
-                                equipmentPos,
-                                r"{{{0}, {1}, {2}, {3}, {4}, {5}}}",
-                            )
-                        ),
-                        param=(
-                            f"<SHIP_{shipPos}_SLOT_{equipmentPos}>",
-                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ICONID>",
-                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_NAME_EN>",
-                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_REMODEL>",
-                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_LEVEL_ALT>",
-                            f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ID>",
-                        ),
+                else:
+                    self._eval_DefineConfigParams(
+                        _DefineConfig(
+                            name="".join((r"\kk", shipPos, equipmentPos, r"{}")),
+                            template="".join(
+                                (
+                                    r"\kl",
+                                    shipPos,
+                                    equipmentPos,
+                                    r"{{{0}, {1}, {2}, {3}, {4}, {5}}}",
+                                )
+                            ),
+                            param=(
+                                f"<SHIP_{shipPos}_SLOT_{equipmentPos}>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ICONID>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_NAME_EN>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_REMODEL>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_LEVEL_ALT>",
+                                f"<SHIP_{shipPos}_EQUIPMENT_{equipmentPos}_ID>",
+                            ),
+                        )
                     )
-                )
