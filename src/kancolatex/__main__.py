@@ -3,6 +3,7 @@ import json
 import logging
 import sys
 from dataclasses import dataclass
+from importlib.metadata import version
 from io import TextIOWrapper
 
 from typing_extensions import Sequence
@@ -75,6 +76,8 @@ def argumentParser() -> argparse.ArgumentParser:
         help="path to the json of english translation for equipments",
     )
 
+    parser.add_argument("--version", action="store_true", help="current version")
+
     return parser
 
 
@@ -88,6 +91,7 @@ class Args:
     debug: bool
     translation_ships_en: TextIOWrapper | None
     translation_equipments_en: TextIOWrapper | None
+    version: bool
 
 
 _SUCCESS = 0
@@ -108,6 +112,10 @@ def main(argv: Sequence[str] | None = None):
 
     if all(not v for v in vars(_parsedResult).values()):
         parser.print_help()
+
+    if args.version:
+        print(version("kancolatex"))
+        sys.exit(_SUCCESS)
 
     if args.reset:
         try:
