@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "kancolatex"
-version = "0.0.5"
+version = "0.0.6"
 license = { file = "LICENSE" }
 description = "A command line tool generate LaTex template from Kancolle Deck Builder."
 readme = "README.md"
