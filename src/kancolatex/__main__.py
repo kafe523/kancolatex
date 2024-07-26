@@ -219,6 +219,7 @@ def main(argv: Sequence[str] | None = None):
     if args.debug:
         LOGGER.setLevel(logging.DEBUG)
         setattr(_parsedResult, "debug", False)
+    setattr(_parsedResult, "mode", "")
 
     LOGGER.debug(f"{args = }")
 
