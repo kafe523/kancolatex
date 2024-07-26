@@ -382,8 +382,25 @@ class PreDefineMacro:
                 )
 
             self._define_template(
+                fleetPos, *_base("fullAirPower", "FULL_AIRPOWER", "fullAirPower")
+            )
+
+            self._define_template(
+                fleetPos, *_base("speedKanji", "SPEED_KANJI", "fleetSpeed")
+            )
+
+            self._define_template(
                 fleetPos,
-                *_base("fullAirPower", "FULL_AIRPOWER", "fullAirPower"),
+                *_base("speedNum", "SPEED_NUM", "fleetSpeed"),
+                _functionWrapper=lambda v: str(
+                    {
+                        "最速": 20,
+                        "高速+": 15,
+                        "高速": 10,
+                        "低速統一": 5,
+                        "低速": 1,
+                    }.get(v, 0)
+                ),
             )
 
     def _define_ship(self):

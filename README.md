@@ -10,6 +10,55 @@ A command line tool generate LaTex template from Kancolle Deck Builder.
 
 0. Launch a terminal
 
+<details open>
+    <summary>Download from pip</summary>
+
+1. Create a python venv
+
+```bash
+python3 -m venv .venv
+```
+
+2. Enable venv
+   - on Unix system
+   ```sh
+   source .venv/bin/activate
+   ```
+
+   - on Windows
+   ```
+   .\.venv\Scripts\activate
+   ```
+
+   When the successfully launch, there should be a `(.venv)` on your terminal.
+
+   > **IT IS STRONGLY ENCOURAGE TO CREATE A VIRTUAL ENVIRONMENT FOR ANY PYTHON
+   > PROJECT WITH 3RD PARTY DEPENDENCE!**
+
+   > use `deactivate` to quit the venv.
+   > ```sh
+   > deactivate
+   >
+
+3. Download the package in pip
+   ```sh
+   pip install kancolatex
+   ```
+4. Test is install successful After the setup. when you type `kancolatex` into
+   your terminal, it shall display the help into.
+   ```sh
+   kancolatex
+   ```
+
+If it success, next you shall init a database for game data by enter:
+   ```sh
+   kancolatex --reset
+   ```
+</details>
+
+<details>
+    <summary>Download from source</summary>
+
 1. Clone this repo
 
 - If you don't know git, enter following command into your terminal
@@ -57,6 +106,8 @@ python3 -m venv .venv
    ```sh
    pip install -e .
    ```
+
+
 5. Test is install successful After the setup. when you type `kancolatex` into
    your terminal, it shall display the help into.
    ```sh
@@ -67,12 +118,21 @@ python3 -m venv .venv
    ```sh
    kancolatex --reset
    ```
+</details>
 
 ## How to update
 
-0. Deactivate your python venv is it is enabled
-1. Delete your local `Kancolatex` folder
-2. [How to setup](#how-to-setup)
+<details open>
+    <summary>Download from pip</summary>
+    `pip install kancolatex --upgrade`
+</details>
+
+<details>
+    <summary>Download from source</summary>
+   0. Deactivate your python venv is it is enabled
+   1. Delete your local `Kancolatex` folder
+   2. [How to setup](#how-to-setup)
+</details>
 
 ## How to use
 
@@ -276,10 +336,12 @@ kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
 
 > `P = fleet mnemonic`
 
-| Latex                   | Macro                   | Access                   | Usage             | Example                                                                          | Note                                   |
-| ----------------------- | ----------------------- | ------------------------ | ----------------- | -------------------------------------------------------------------------------- | -------------------------------------- |
-| `\fleet{P}fullAirpower` | `FLEET_{P}_AIRPOWER`    | `Fleet.{P}.fullAirpower` | Fleet air power   | `\fleetAfullAirpower` Fleet 1 air power <br> `\fleetUfullAirpower` JTF air power |                                        |
-| `\fleet{P}los{Level}`   | `FLEET_{P}_LOS_{Level}` | `Fleet.{P}.los.{L}`      | Fleet type 33 Los | `\fleetBlosA` Fleet 1 33(1) <br> `fleetUlosC` JTF 33(3)                          | Level: `A = 1` `B = 2` `C = 3` `D = 4` |
+| Latex                   | Macro                   | Access                   | Usage                | Example                                                                          | Note                                                           |
+| ----------------------- | ----------------------- | ------------------------ | -------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `\fleet{P}fullAirpower` | `FLEET_{P}_AIRPOWER`    | `Fleet.{P}.fullAirpower` | Fleet air power      | `\fleetAfullAirpower` Fleet 1 air power <br> `\fleetUfullAirpower` JTF air power |                                                                |
+| `\fleet{P}los{Level}`   | `FLEET_{P}_LOS_{Level}` | `Fleet.{P}.los.{L}`      | Fleet type 33 Los    | `\fleetBlosA` Fleet 1 33(1) <br> `fleetUlosC` JTF 33(3)                          | Level: `A = 1` `B = 2` `C = 3` `D = 4`                         |
+| `\fleet{P}speedKanji`   | `FLEET_{P}_SPEED_KANJI` | `Fleet.{P}.fleetSpeed`   | Fleet speed in Kanji |                                                                                  |                                                                |
+| `\fleet{P}speedNum`     | `FLEET_{P}_SPEED_NUM`   | ``                       | Fleet speed in Kanji |                                                                                  | No Access Method, Return Integer, Greater number, faster speed |
 
 - Ship
 
