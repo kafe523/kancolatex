@@ -10,7 +10,7 @@ from typing_extensions import Sequence
 from .... import utils
 from ....logger import LOGGER
 from ... import const
-from ...air_calc_result import AirCalcResult
+from ..air_calc_result import AirCalcResult
 from ...const import SUPPORT_TYPE
 from ...const import AvoidType
 from ...const import Formation

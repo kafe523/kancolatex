@@ -1,7 +1,6 @@
 # type: ignore # noqa: F401
 
 from . import const
-from .air_calc_result import AirCalcResult
 from .air_control_simulator import *
 from .deck_builder import *
 from .eo_en import *

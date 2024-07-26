@@ -4,8 +4,8 @@ import math
 from dataclasses import dataclass
 from dataclasses import field
 
-from .. import utils
-from . import const
+from ... import utils
+from .. import const
 
 
 @dataclass(slots=True)
