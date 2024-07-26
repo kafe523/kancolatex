@@ -218,6 +218,15 @@ class EquipmentTypes(IntEnum):
 # EquipmentTypes: TypeAlias = EquipmentTypeEnum
 
 
+class AirBaseActionKind(IntEnum):
+    NONE = -1
+    STANDBY = 0
+    MISSION = 1
+    AIR_DEFENSE = 2
+    TAKE_COVER = 3
+    REST = 4
+
+
 class AIR_STATE(IntEnum):
     KAKUHO = 0
     YUSEN = 1
