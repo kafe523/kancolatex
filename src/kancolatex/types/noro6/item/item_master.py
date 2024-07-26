@@ -82,12 +82,12 @@ class ItemMaster:
         self.isRecon = self.apiTypeId in const.RECONNAISSANCES
         self.isABAttacker = self.apiTypeId in const.AB_ATTACKERS
         self.isBakusen = self.id in const.BAKUSEN
-        self.isRocket = self.apiTypeId in const.ROCKET
+        self.isRocket = self.id in const.ROCKET
         self.isLateModelTorpedo = self.apiTypeId in const.LATE_MODEL_TORPEDO
         self.isShinzan = self.apiTypeId in const.AB_ATTACKERS_LARGE
         self.isJet = self.apiTypeId is EquipmentTypes.JetBomber
-        self.enabledAttackLandBase = self.apiTypeId in const.ENABLED_LAND_BASE_ATTACK
-        self.isStrictDepthCharge = self.apiTypeId in const.STRICT_DEPTH_CHARGE
+        self.enabledAttackLandBase = self.id in const.ENABLED_LAND_BASE_ATTACK
+        self.isStrictDepthCharge = self.id in const.STRICT_DEPTH_CHARGE
         self.isTorpedoAttacker = self.apiTypeId in {
             EquipmentTypes.CarrierBasedTorpedo,
             EquipmentTypes.LandBasedAttacker,
