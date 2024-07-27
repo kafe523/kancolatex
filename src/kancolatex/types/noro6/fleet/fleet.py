@@ -10,7 +10,6 @@ from typing_extensions import Sequence
 from .... import utils
 from ....logger import LOGGER
 from ... import const
-from ..air_calc_result import AirCalcResult
 from ...const import SUPPORT_TYPE
 from ...const import AvoidType
 from ...const import Formation
@@ -18,6 +17,7 @@ from ...const import FormationType
 from ...const import ShipType
 from ..aerial_combat import AntiAirCutIn
 from ..aerial_combat import ShootDownInfo
+from ..air_calc_result import AirCalcResult
 from ..interface import ContactRate
 from ..item import Item
 from .ship import Ship

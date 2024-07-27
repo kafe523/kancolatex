@@ -236,6 +236,14 @@ class AIR_STATE(IntEnum):
     NONE = 5
 
 
+class DIFFICULTY_LEVEL(IntEnum):
+    HARD = 0
+    MEDIUM = 1
+    EASY = 2
+    CASUAL = 3
+    UNKNOWN = 4
+
+
 class SUPPORT_TYPE(IntEnum):
     SHELLING = 0
     AIRSTRIKE = 1

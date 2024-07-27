@@ -1,14 +1,19 @@
 from __future__ import annotations
+
 import math
+from dataclasses import InitVar
+from dataclasses import dataclass
+from dataclasses import field
 
-from dataclasses import dataclass, InitVar, field
+from typing_extensions import Optional
+from typing_extensions import Sequence
+from typing_extensions import TypedDict
 
-from typing_extensions import Optional, Sequence, TypedDict
-
-from ..air_calc_result import AirCalcResult
-from ..item import Item, ItemBuilder
-from ...const import AirBaseActionKind
 from .... import utils
+from ...const import AirBaseActionKind
+from ..air_calc_result import AirCalcResult
+from ..item import Item
+from ..item import ItemBuilder
 
 
 @dataclass(slots=True)
