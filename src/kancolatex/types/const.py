@@ -214,10 +214,6 @@ class EquipmentTypes(IntEnum):
     """副砲(II)"""
 
 
-# EquipmentTypes: TypeAlias = int | EquipmentTypeEnum
-# EquipmentTypes: TypeAlias = EquipmentTypeEnum
-
-
 class AirBaseActionKind(IntEnum):
     NONE = -1
     STANDBY = 0
@@ -312,7 +308,7 @@ AB_PLANE_TYPES = {
 FIGHTERS = {
     EquipmentTypes.CarrierBasedFighter,
     EquipmentTypes.SeaplaneFighter,
-    EquipmentTypes.JetFighter,
+    EquipmentTypes.Interceptor,
 }
 
 ATTACKERS = {
