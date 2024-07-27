@@ -10,6 +10,7 @@ from typing_extensions import Sequence
 from typing_extensions import TypedDict
 
 from .... import utils
+from ....logger import LOGGER
 from ...const import AirBaseActionKind
 from ..air_calc_result import AirCalcResult
 from ..item import Item
@@ -105,6 +106,9 @@ class Airbase:
 
         for item in self.items:
             if item.fullSlot > 0:
+                LOGGER.debug(f"{item.fullAirPower = }, {item.defenseAirPower = }")
+                LOGGER.debug(f"{item.slot = }")
+
                 self.fullAirPower += item.fullAirPower
                 self.defenseAirPower += item.defenseAirPower
             if item.data.isRocket:

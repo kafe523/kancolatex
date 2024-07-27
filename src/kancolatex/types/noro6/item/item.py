@@ -9,6 +9,7 @@ from typing_extensions import MutableSequence
 from typing_extensions import Optional
 from typing_extensions import Sequence
 
+from ....logger import LOGGER
 from ...const import EquipmentTypes
 from ..interface import ContactRate
 from .item_master import ItemMaster
@@ -247,6 +248,11 @@ class Item:
                     self.actualDefenseAntiAir * math.sqrt(self.fullSlot)
                     + self.bonusAirPower
                 )
+
+            LOGGER.debug(
+                f"{self.actualAntiAir = }, {math.sqrt(self.fullSlot) = }, {self.bonusAirPower = }"
+            )
+            LOGGER.debug(f"{self.fullAirPower = }")
 
             self.airPower = self.fullAirPower
             self.defenseAirPower = self.fullDefenseAirPower
