@@ -210,7 +210,7 @@ class _Helper:
         )
 
 
-def main(argv: Sequence[str] | None = None):
+def _main(argv: Sequence[str] | None = None) -> int:
 
     parser = argumentParser()
     _parsedResult = parser.parse_args(argv)
@@ -228,21 +228,21 @@ def main(argv: Sequence[str] | None = None):
 
     if args.version:
         print(version("kancolatex"))
-        sys.exit(_SUCCESS)
+        return _SUCCESS
 
     if args.reset:
         try:
             database.dbReset()
         except Exception as e:
             LOGGER.fatal(e)
-            sys.exit(_ERROR)
+            return _ERROR
 
     if args.update:
         try:
             database.dbUpdate()
         except Exception as e:
             LOGGER.fatal(e)
-            sys.exit(_ERROR)
+            return _ERROR
 
     if args.mode == "default":
         _Helper.mode_Default(args)
@@ -251,4 +251,7 @@ def main(argv: Sequence[str] | None = None):
     elif args.mode == "translate":
         _Helper.mode_Translate(args)
 
-    sys.exit(_SUCCESS)
+    return _SUCCESS
+
+def main():
+    sys.exit(_main())
