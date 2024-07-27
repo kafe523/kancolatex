@@ -1,16 +1,20 @@
 from dataclasses import dataclass
 
 from pydantic import ValidationError
+from typing_extensions import Sequence
 from typing_extensions import cast
 
 from ...logger import LOGGER
 from .. import const
 from ..const import FleetType
 from ..const import FormationType
+from ..deck_builder import DeckBuilderAirBase
 from ..deck_builder import DeckBuilderData
 from ..deck_builder import DeckBuilderEquipment
 from ..deck_builder import DeckBuilderFleet
 from ..deck_builder import DeckBuilderShip
+from .airbase import Airbase
+from .airbase import AirbaseBuilder
 from .fleet import Fleet
 from .fleet import FleetBuilder
 from .fleet import FleetInfo
@@ -78,6 +82,53 @@ class Convert:
                 fleetType=fleetType,
             )
         )
+
+    @staticmethod
+    def convertDeckToAirbase(
+        a: DeckBuilderAirBase, cells: Sequence[tuple[int, int]]
+    ) -> Airbase:
+        from ...database import DATABASE as _db
+
+        items: list[Item] = []
+        for i in range(1, 5):
+            _key = f"equipments{i}"
+            LOGGER.debug(f"{_key = }")
+            item = (
+                cast(DeckBuilderEquipment, _item)
+                if (_item := getattr(a.equipment, _key, None)) is not None
+                else DeckBuilderEquipment(id=0, rf=0, mas=0)
+            )
+            LOGGER.debug(f"{getattr(a.equipment, _key, None) = }")
+            master: ItemMaster = (
+                ItemMaster.from_master_item(im)
+                if (im := _db.QueryMasterEquipmentByIdFromNoro6Media(item.id))
+                is not None
+                else ItemMaster()
+            )
+
+            slot = 18
+            if master.apiTypeId in const.RECONNAISSANCES:
+                slot = 4
+            elif master.apiTypeId in const.AB_ATTACKERS_LARGE:
+                slot = 9
+
+            items.append(
+                Item(
+                    ItemBuilder(
+                        master=master,
+                        remodel=item.level,
+                        level=const.PROF_LEVEL_BORDER[
+                            item.aircraftLevel if item.aircraftLevel else 0
+                        ],
+                        slot=slot,
+                    )
+                )
+            )
+
+        if cells:
+            LOGGER.info("'cells' currently is not supported!")
+
+        return Airbase(AirbaseBuilder(mode=a.mode, items=items))
 
     @staticmethod
     def convertDeckToShip(s: DeckBuilderShip) -> Ship:
