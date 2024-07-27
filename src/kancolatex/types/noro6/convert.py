@@ -15,6 +15,8 @@ from ..deck_builder import DeckBuilderFleet
 from ..deck_builder import DeckBuilderShip
 from .airbase import Airbase
 from .airbase import AirbaseBuilder
+from .airbase import AirbaseInfo
+from .airbase import AirbaseInfoBuilder
 from .fleet import Fleet
 from .fleet import FleetBuilder
 from .fleet import FleetInfo
@@ -83,15 +85,40 @@ class Convert:
             )
         )
 
+    @classmethod
+    def loadDeckBuilderToAirbaseInfo(cls, text: str) -> AirbaseInfo | None:
+        try:
+            deckBuilderData = DeckBuilderData.model_validate_json(text)
+        except ValidationError as e:
+            LOGGER.fatal(e)
+            return None
+
+        LOGGER.debug(f"{deckBuilderData = }")
+
+        airbases: list[Airbase] = []
+        for i in range(1, 4):
+            _key = f"airBase{i}"
+            LOGGER.debug(f"{_key = }")
+            airbase = getattr(deckBuilderData, _key, None)
+            LOGGER.debug(f"{airbase = }")
+
+            airbases.append(
+                cls.convertDeckToAirbase(airbase)
+                if airbase is not None
+                else Airbase(AirbaseBuilder())
+            )
+
+        return AirbaseInfo(AirbaseInfoBuilder(airbases=airbases))
+
     @staticmethod
     def convertDeckToAirbase(
-        a: DeckBuilderAirBase, cells: Sequence[tuple[int, int]]
+        a: DeckBuilderAirBase, cells: Sequence[tuple[int, int]] | None = None
     ) -> Airbase:
         from ...database import DATABASE as _db
 
         items: list[Item] = []
         for i in range(1, 5):
-            _key = f"equipments{i}"
+            _key = f"equipment{i}"
             LOGGER.debug(f"{_key = }")
             item = (
                 cast(DeckBuilderEquipment, _item)
