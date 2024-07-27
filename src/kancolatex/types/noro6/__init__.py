@@ -2,6 +2,7 @@
 
 from .aerial_combat import *
 from .air_calc_result import AirCalcResult
+from .airbase import *
 from .convert import Convert
 from .enemy import *
 from .fleet import *
