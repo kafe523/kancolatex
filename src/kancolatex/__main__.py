@@ -91,7 +91,15 @@ def argumentParser() -> argparse.ArgumentParser:
     parser.add_argument("--version", action="store_true", help="current version")
 
     parser.add_argument(
-        "--name-type",
+        "--export-type",
+        metavar="export_type",
+        type=str,
+        choices=["airbase", "fleet"],
+        help="target type want to export, option: [airbase, fleet]",
+    )
+
+    parser.add_argument(
+        "--translate-type",
         metavar="translate_type",
         type=str,
         choices=["ship", "equipment"],
@@ -99,7 +107,7 @@ def argumentParser() -> argparse.ArgumentParser:
     )
 
     parser.add_argument(
-        "--target",
+        "--translate-target",
         metavar="translate_target",
         type=str,
         help="target want to translate",
@@ -120,8 +128,9 @@ class Args:
     translation_ships_en: TextIOWrapper | None
     translation_equipments_en: TextIOWrapper | None
     version: bool
-    name_type: Literal["ship", "equipment"] | None
-    target: str | None
+    export_type: Literal["airbase", "fleet"] | None
+    translate_type: Literal["ship", "equipment"] | None
+    translate_target: str | None
 
 
 _SUCCESS = 0
@@ -130,10 +139,12 @@ _ERROR = 1
 
 class _Helper:
     @classmethod
-    def mode_Default(cls, args: Args):
+    def mode_Default(cls, args: Args) -> int:
         if args.noro and args.template:
 
             fleetInfo = cls._createFleetInfo(args.noro)
+            if fleetInfo is None:
+                return _ERROR
 
             _translator = cls._createTranslator(
                 args.translation_ships_en, args.translation_equipments_en
@@ -141,25 +152,23 @@ class _Helper:
 
             p = Process(fleetInfo, args.template, _translator)
             result = p.process()
-            if args.output and not p.errorCount:
-                args.output.write(result.getvalue())
-            elif not p.errorCount:
-                return print(result.getvalue())
+            if not p.errorCount:
+                cls._write(args, result.getvalue())
 
         elif args.noro and args.template is None:
             LOGGER.info("Please provide a template.")
-            sys.exit(_ERROR)
+            return _ERROR
         elif args.noro is None and args.template:
             LOGGER.info("Please provide a deck builder json.")
-            sys.exit(_ERROR)
+            return _ERROR
+
+        return _SUCCESS
 
     @classmethod
-    def mode_Export(cls, args: Args):
+    def mode_Export(cls, args: Args) -> int:
         if args.noro is None:
             LOGGER.info("Please provide a deck builder json.")
-            sys.exit(_ERROR)
-
-        fleetInfo = cls._createFleetInfo(args.noro)
+            return _ERROR
 
         import pydantic
 
@@ -170,25 +179,48 @@ class _Helper:
 
                 return super().default(o)
 
-        return json.dumps(asdict(fleetInfo), cls=_J, ensure_ascii=False)
+        if args.export_type is None:
+            LOGGER.info("Please provide a target to export.")
+            return _ERROR
+
+        if args.export_type == "fleet":
+            fleetInfo = cls._createFleetInfo(args.noro)
+            if fleetInfo is None:
+                return _ERROR
+            else:
+                cls._write(
+                    args, json.dumps(asdict(fleetInfo), cls=_J, ensure_ascii=False)
+                )
+        elif args.export_type == "airbase":
+            airbaseInfo = cls._createAirbaseInfo(args.noro)
+            if airbaseInfo is None:
+                return _ERROR
+
+            else:
+                cls._write(
+                    args, json.dumps(asdict(airbaseInfo), cls=_J, ensure_ascii=False)
+                )
+        return _SUCCESS
 
     @classmethod
-    def mode_Translate(cls, args: Args):
-        if args.target is None:
+    def mode_Translate(cls, args: Args) -> int:
+        if args.translate_target is None:
             LOGGER.info("Please provide a target to translate.")
-            sys.exit(_ERROR)
+            return _ERROR
 
         _translator = cls._createTranslator(
             args.translation_ships_en, args.translation_equipments_en
         )
 
         _translateResult: str = ""
-        if args.name_type == "ship":
-            _translateResult = _translator.translate_ship(args.target)
-        elif args.name_type == "equipment":
-            _translateResult = _translator.translate_equipment(args.target)
+        if args.translate_type == "ship":
+            _translateResult = _translator.translate_ship(args.translate_target)
+        elif args.translate_type == "equipment":
+            _translateResult = _translator.translate_equipment(args.translate_target)
 
-        print(_translateResult)
+        cls._write(args, _translateResult)
+
+        return _SUCCESS
 
     @classmethod
     def _createFleetInfo(cls, _f: TextIOWrapper):
@@ -196,9 +228,19 @@ class _Helper:
 
         if fleetInfo is None:
             LOGGER.fatal("fleetInfo is None")
-            sys.exit(_ERROR)
+            return None
 
         return fleetInfo
+
+    @classmethod
+    def _createAirbaseInfo(cls, _f: TextIOWrapper):
+        airbaseInfo = Convert.loadDeckBuilderToAirbaseInfo(_f.read())
+
+        if airbaseInfo is None:
+            LOGGER.fatal("airbaseInfo is None")
+            return None
+
+        return airbaseInfo
 
     @classmethod
     def _createTranslator(cls, _s: TextIOWrapper | None, _e: TextIOWrapper | None):
@@ -208,6 +250,13 @@ class _Helper:
                 (json.loads(_e.read()) if _e is not None else dict()),
             )
         )
+
+    @staticmethod
+    def _write(args: Args, value: str):
+        if args.output:
+            args.output.write(value)
+        else:
+            print(value)
 
 
 def _main(argv: Sequence[str] | None = None) -> int:
@@ -245,13 +294,14 @@ def _main(argv: Sequence[str] | None = None) -> int:
             return _ERROR
 
     if args.mode == "default":
-        _Helper.mode_Default(args)
+        return _Helper.mode_Default(args)
     elif args.mode == "export":
-        _Helper.mode_Export(args)
+        return _Helper.mode_Export(args)
     elif args.mode == "translate":
-        _Helper.mode_Translate(args)
+        return _Helper.mode_Translate(args)
 
     return _SUCCESS
+
 
 def main():
     sys.exit(_main())
