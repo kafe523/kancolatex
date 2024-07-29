@@ -5,19 +5,37 @@ import operator
 from dataclasses import dataclass
 from dataclasses import field
 from enum import Enum
+from enum import EnumMeta
 from enum import IntEnum
 from enum import auto
 
 from typing_extensions import Any
 from typing_extensions import Callable
+from typing_extensions import Iterable
+from typing_extensions import Sequence
 from typing_extensions import TypeVar
 
 from ... import utils
 from ...logger import LOGGER
 from ...types.const import EquipmentTypes
+from ...types.noro6 import AirbaseInfo
 from ...types.noro6 import Fleet
 from ...types.noro6 import FleetInfo
 from ..translator.translator import Translator
+
+
+class _ORDER_AIRBASE_TRANSLATE(IntEnum):
+    A = 0
+    B = 1
+    C = 2
+    U = 3
+
+
+class _ORDER_AIRBASE_EQUIPMENT_TRANSLATE(IntEnum):
+    A = 0
+    B = 1
+    C = 2
+    D = 3
 
 
 class _ORDER_EQUIPMENT_TRANSLATE(IntEnum):
@@ -66,7 +84,32 @@ class _ORDER_SHIP_TRANSLATE(IntEnum):
 
 @dataclass(slots=True)
 class OrderTranslate:
+    _T = TypeVar("_T")
     _OptionT = TypeVar("_OptionT", tuple[str, ...], set[str])
+
+    @classmethod
+    def airbase(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t((*cls.airbaseName(_t), *cls.airbaseValue(_t)))
+
+    @classmethod
+    def airbaseName(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(cls._extractName(_ORDER_AIRBASE_TRANSLATE))
+
+    @classmethod
+    def airbaseValue(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(cls._extractValue(_ORDER_AIRBASE_TRANSLATE))
+
+    @classmethod
+    def airbaseEquipment(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t((*cls.airbaseName(_t), *cls.airbaseValue(_t)))
+
+    @classmethod
+    def airbaseEquipmentName(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(cls._extractName(_ORDER_AIRBASE_EQUIPMENT_TRANSLATE))
+
+    @classmethod
+    def airbaseEquipmentValue(cls, _t: type[_OptionT]) -> _OptionT:
+        return _t(cls._extractValue(_ORDER_AIRBASE_EQUIPMENT_TRANSLATE))
 
     @classmethod
     def equipment(cls, _t: type[_OptionT]) -> _OptionT:
@@ -91,6 +134,18 @@ class OrderTranslate:
     @staticmethod
     def shipValue(_t: type[_OptionT]) -> _OptionT:
         return _t(str(k) for k in _ORDER_SHIP_TRANSLATE.__members__.values())
+
+    @staticmethod
+    def _extract(_i: Iterable[Any], _t: Callable[[Any], _T] = str) -> Iterable[_T]:
+        return (_t(v) for v in _i)
+
+    @classmethod
+    def _extractName(cls, _e: EnumMeta, _t: Callable[[Any], _T] = str) -> Iterable[_T]:
+        return (_t(v) for v in _e.__members__.keys())
+
+    @classmethod
+    def _extractValue(cls, _e: EnumMeta, _t: Callable[[Any], _T] = str) -> Iterable[_T]:
+        return (_t(v) for v in _e.__members__.values())
 
 
 class MacroValueType(Enum):
@@ -303,9 +358,134 @@ def attrAccess(fleetInfo: FleetInfo, macro: Macro) -> str:
     return result
 
 
+class _AttrAccessAirbase:
+    @classmethod
+    def access(cls, airbaseInfo: AirbaseInfo, macro: Macro) -> str:
+        if macro.type is not MacroValueType.ATTRIBUTE_ACCESS:
+            return ""
+
+        result: str = ""
+
+        match macroSplit := macro.value.split("."):
+            case [
+                "Airbase",
+                airbasePos,
+                "equipment",
+                equipmentPos,
+                *attrs,
+            ] if airbasePos in OrderTranslate.airbaseName(
+                set
+            ) and equipmentPos in OrderTranslate.airbaseEquipmentName(
+                set
+            ):
+                _abPos = {v.name: v.value for v in _ORDER_AIRBASE_TRANSLATE}.get(
+                    airbasePos, None
+                )
+
+                if _abPos is None:
+                    return ""
+
+                LOGGER.debug(f"{equipmentPos = }")
+
+                _ePos = {
+                    v.name: v.value for v in _ORDER_AIRBASE_EQUIPMENT_TRANSLATE
+                }.get(equipmentPos, None)
+                if _ePos is None:
+                    return ""
+
+                targetAirbase = airbaseInfo.airbases[_abPos]
+                targetEquipment = targetAirbase.items[_ePos]
+
+                LOGGER.debug(f"{targetAirbase = }")
+                LOGGER.debug(f"{targetEquipment = }")
+
+                try:
+                    _r = operator.attrgetter(".".join(attrs))(targetEquipment)
+                except Exception as e:
+                    LOGGER.error(e)
+                    _r = None
+
+                LOGGER.debug(f"{type(_r) = }")
+
+                if _r is not None:
+                    if isinstance(_r, EquipmentTypes):
+                        result = str(_r.value)
+                    elif not isinstance(_r, str):
+                        result = str(_r)
+                    else:
+                        result = _r
+
+                    LOGGER.debug(f"{result = }")
+
+            case [
+                "Airbase",
+                airbasePos,
+                *attrs,
+            ] if airbasePos in OrderTranslate.airbaseName(set):
+                _lookUpPos = {v.name: v.value for v in _ORDER_AIRBASE_TRANSLATE}.get(
+                    airbasePos, None
+                )
+                if _lookUpPos is None:
+                    return ""
+
+                if _lookUpPos == 0:
+                    result = cls._accessInfoGeneral(airbaseInfo, attrs)
+                else:
+                    result = cls._accessGeneral(airbaseInfo, _lookUpPos, attrs)
+
+            case _:
+                LOGGER.debug(f"unknown pattern: {macroSplit!r}")
+
+        return result
+
+    @classmethod
+    def _accessGeneral(
+        cls, airbaseInfo: AirbaseInfo, pos: int, attrs: Sequence[str]
+    ) -> str:
+        targetAirbase = airbaseInfo.airbases[pos]
+        result: str = ""
+
+        try:
+            _r = operator.attrgetter(".".join(attrs))(targetAirbase)
+        except Exception as e:
+            LOGGER.error(e)
+            _r = None
+
+        if _r is not None:
+            result = str(_r) if not isinstance(_r, str) else _r
+            LOGGER.debug(f"{result = }")
+
+        return result
+
+    @classmethod
+    def _accessInfoGeneral(cls, airbaseInfo: AirbaseInfo, attrs: Sequence[str]) -> str:
+        result: str = ""
+
+        try:
+            _r = operator.attrgetter(".".join(attrs))(airbaseInfo)
+        except Exception as e:
+            LOGGER.error(e)
+            _r = None
+
+        if _r is not None:
+            result = str(_r) if not isinstance(_r, str) else _r
+            LOGGER.debug(f"{result = }")
+
+        return result
+
+
+class _AttrAccessFleet: ...
+
+
+class AttrAccess:
+    Airbase = _AttrAccessAirbase()
+    Fleet = _AttrAccessFleet()
+
+
 @dataclass(slots=True)
 class PreDefineMacro:
     fleetInfo: FleetInfo
+    airbaseInfo: AirbaseInfo
     translator: Translator
 
     _macroLookUpCache: dict[str, str] = field(init=False)
@@ -315,6 +495,8 @@ class PreDefineMacro:
         self._macroLookUpCache = {}
         self._latexLookUpCache = {}
 
+        self._define_airbase()
+        self._define_airbase_equipment()
         self._define_fleet()
         self._define_ship()
         self._define_equipment()
@@ -328,6 +510,9 @@ class PreDefineMacro:
         return self._latexLookUpCache
 
     def _attrAccess(self, macro: Macro):
+        if macro.value.startswith("Airbase"):
+            return AttrAccess.Airbase.access(self.airbaseInfo, macro)
+
         return attrAccess(self.fleetInfo, macro)
 
     def _define_template(
@@ -342,6 +527,9 @@ class PreDefineMacro:
         _latex = _latex.format(_pos)
         _macro = _macro.format(_pos)
         _access = _access.format(_pos)
+
+        LOGGER.debug(f"{_latex = }, {_macro = }, {_access = }")
+
         try:
             _attrAccessResult = self._attrAccess(
                 Macro(_access, MacroValueType.ATTRIBUTE_ACCESS)
@@ -352,12 +540,103 @@ class PreDefineMacro:
                 else _functionWrapper(_attrAccessResult)
             )
             LOGGER.debug(f"{_accessResult = }")
-            self._macroLookUpCache.update({_macro: _accessResult})
-            self._latexLookUpCache.update({_latex: _accessResult})
+            if _accessResult != "":
+                self._macroLookUpCache.update({_macro: _accessResult})
+                self._latexLookUpCache.update({_latex: _accessResult})
         except IndexError as e:
             LOGGER.debug(f"{e = } {_pos = }")
-            self._macroLookUpCache.update({_macro: _default})
-            self._latexLookUpCache.update({_latex: _default})
+
+    def _define_airbase(self):
+        for airbasePos in OrderTranslate.airbaseName(tuple):
+            LOGGER.debug(f"{airbasePos = }")
+
+            def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
+                return (
+                    rf"\airbase{airbasePos}{_l}",
+                    f"AIRBASE_{airbasePos}_{_m}",
+                    f"Airbase.{airbasePos}.{_a}",
+                )
+
+            self._define_template(
+                airbasePos, *_base("fullAirPower", "FULL_AIRPOWER", "fullAirPower")
+            )
+            self._define_template(
+                airbasePos,
+                *_base("defenseAirPower", "DEFENSE_AIRPOWER", "defenseAirPower"),
+            )
+            self._define_template(
+                airbasePos,
+                *_base(
+                    "highDefenseAirPower",
+                    "HIGH_DEFENSE_AIRPOWER",
+                    "highDefenseAirPower",
+                ),
+            )
+
+    def _define_airbase_equipment(self):
+        for airbasePos in OrderTranslate.airbaseName(tuple):
+            LOGGER.debug(f"{airbasePos = }")
+
+            for equipmentPos in OrderTranslate.airbaseEquipmentName(tuple):
+                LOGGER.debug(f"{equipmentPos = }")
+
+                def _base(_l: str, _m: str, _a: str) -> tuple[str, str, str]:
+                    return (
+                        rf"\airbase{airbasePos}equipment{equipmentPos}{_l}",
+                        f"AIRBASE_{airbasePos}_EQUIPMENT_{equipmentPos}_{_m}",
+                        f"Airbase.{airbasePos}.equipment.{equipmentPos}.{_a}",
+                    )
+
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "nameJp",
+                        "NAME_JP",
+                        "data.name",
+                    ),
+                )
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "nameEn",
+                        "NAME_EN",
+                        "data.name",
+                    ),
+                    _functionWrapper=self.translator.translate_equipment,
+                )
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "remodel",
+                        "REMODEL",
+                        "remodel",
+                    ),
+                )
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "levelAlt",
+                        "LEVEL_ALT",
+                        "levelAlt",
+                    ),
+                )
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "typeid",
+                        "TYPEDID",
+                        "data.apiTypeId",
+                    ),
+                )
+
+                self._define_template(
+                    airbasePos,
+                    *_base(
+                        "iconid",
+                        "ICONID",
+                        "data.iconTypeId",
+                    ),
+                )
 
     def _define_fleet(self):
         for fleetPos in ("A", "B", "C", "D", "U"):

@@ -10,6 +10,7 @@ from typing_extensions import Optional
 from typing_extensions import Sequence
 
 from ...logger import LOGGER
+from ...types.noro6 import AirbaseInfo
 from ...types.noro6 import FleetInfo
 from ..translator.translator import Translator
 from .macro import MacroValueType
@@ -29,6 +30,7 @@ class _DefineConfig(BaseModel):
 @dataclass(slots=True)
 class Process:
     fleetInfo: FleetInfo
+    airbaseInfo: AirbaseInfo
     template: TextIOWrapper
 
     _preDefineMacro: PreDefineMacro = field(init=False)
@@ -44,6 +46,7 @@ class Process:
     def __post_init__(self):
         self._preDefineMacro = PreDefineMacro(
             self.fleetInfo,
+            self.airbaseInfo,
             self.translator if self.translator else Translator(builder=None),
         )
         self._defineTable.update(self._preDefineMacro.latexLoopUp)

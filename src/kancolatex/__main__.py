@@ -146,11 +146,17 @@ class _Helper:
             if fleetInfo is None:
                 return _ERROR
 
+            args.noro.seek(0)
+
+            airbaseInfo = cls._createAirbaseInfo(args.noro)
+            if airbaseInfo is None:
+                return _ERROR
+
             _translator = cls._createTranslator(
                 args.translation_ships_en, args.translation_equipments_en
             )
 
-            p = Process(fleetInfo, args.template, _translator)
+            p = Process(fleetInfo, airbaseInfo, args.template, _translator)
             result = p.process()
             if not p.errorCount:
                 cls._write(args, result.getvalue())
