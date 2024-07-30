@@ -408,7 +408,7 @@ class _AttrAccessAirbase:
                 LOGGER.debug(f"{type(_r) = }")
 
                 if _r is not None:
-                    if isinstance(_r, EquipmentTypes):
+                    if isinstance(_r, Enum):
                         result = str(_r.value)
                     elif not isinstance(_r, str):
                         result = str(_r)
@@ -452,7 +452,15 @@ class _AttrAccessAirbase:
             _r = None
 
         if _r is not None:
-            result = str(_r) if not isinstance(_r, str) else _r
+            # result = str(_r) if not isinstance(_r, str) else _r
+
+            if isinstance(_r, Enum):
+                result = str(_r.value)
+            elif not isinstance(_r, str):
+                result = str(_r)
+            else:
+                result = _r
+
             LOGGER.debug(f"{result = }")
 
         return result
@@ -468,7 +476,15 @@ class _AttrAccessAirbase:
             _r = None
 
         if _r is not None:
-            result = str(_r) if not isinstance(_r, str) else _r
+            # result = str(_r) if not isinstance(_r, str) else _r
+
+            if isinstance(_r, Enum):
+                result = str(_r.value)
+            elif not isinstance(_r, str):
+                result = str(_r)
+            else:
+                result = _r
+
             LOGGER.debug(f"{result = }")
 
         return result
@@ -530,6 +546,8 @@ class PreDefineMacro:
 
         LOGGER.debug(f"{_latex = }, {_macro = }, {_access = }")
 
+        _accessResult: str = ""
+
         try:
             _attrAccessResult = self._attrAccess(
                 Macro(_access, MacroValueType.ATTRIBUTE_ACCESS)
@@ -540,11 +558,11 @@ class PreDefineMacro:
                 else _functionWrapper(_attrAccessResult)
             )
             LOGGER.debug(f"{_accessResult = }")
-            if _accessResult != "":
-                self._macroLookUpCache.update({_macro: _accessResult})
-                self._latexLookUpCache.update({_latex: _accessResult})
         except IndexError as e:
             LOGGER.debug(f"{e = } {_pos = }")
+        finally:
+            self._macroLookUpCache.update({_macro: _accessResult})
+            self._latexLookUpCache.update({_latex: _accessResult})
 
     def _define_airbase(self):
         for airbasePos in OrderTranslate.airbaseName(tuple):
@@ -570,6 +588,22 @@ class PreDefineMacro:
                     "highDefenseAirPower",
                     "HIGH_DEFENSE_AIRPOWER",
                     "highDefenseAirPower",
+                ),
+            )
+            self._define_template(
+                airbasePos,
+                *_base(
+                    "mode",
+                    "MODE",
+                    "mode",
+                ),
+            )
+            self._define_template(
+                airbasePos,
+                *_base(
+                    "radius",
+                    "RADIUS",
+                    "radius",
                 ),
             )
 
@@ -623,6 +657,14 @@ class PreDefineMacro:
                 self._define_template(
                     airbasePos,
                     *_base(
+                        "id",
+                        "ID",
+                        "data.id",
+                    ),
+                )
+                self._define_template(
+                    airbasePos,
+                    *_base(
                         "typeid",
                         "TYPEDID",
                         "data.apiTypeId",
@@ -636,6 +678,11 @@ class PreDefineMacro:
                         "ICONID",
                         "data.iconTypeId",
                     ),
+                )
+                self._define_template(
+                    equipmentPos,
+                    *_base("equipped", "EQUIPPED", "data.id"),
+                    _functionWrapper=lambda v: str(int(bool(int(v)))),
                 )
 
     def _define_fleet(self):
