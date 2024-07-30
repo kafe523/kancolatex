@@ -38,19 +38,22 @@ python3 -m venv .venv
    > use `deactivate` to quit the venv.
    > ```sh
    > deactivate
-   >
+   > ```
 
 3. Download the package in pip
+
    ```sh
    pip install kancolatex
    ```
 4. Test is install successful After the setup. when you type `kancolatex` into
    your terminal, it shall display the help into.
+
    ```sh
    kancolatex
    ```
 
-If it success, next you shall init a database for game data by enter:
+5. If it success, next you shall init a database for game data by enter:
+
    ```sh
    kancolatex --reset
    ```
@@ -63,29 +66,31 @@ If it success, next you shall init a database for game data by enter:
 
 - If you don't know git, enter following command into your terminal
 
-```sh
-git clone https://github.com/kafe523/kancolatex.git
-```
+  ```sh
+  git clone https://github.com/kafe523/kancolatex.git
+  ```
 
-After cloning, please cd inside the folder
+  After cloning, please cd inside the folder
 
-```sh
-cd kancolatex/
-```
+  ```sh
+  cd kancolatex/
+  ```
 
-2. Create a python venv
+1. Create a python venv
 
-```bash
-python3 -m venv .venv
-```
+   ```bash
+   python3 -m venv .venv
+   ```
 
-3. Enable venv
+2. Enable venv
    - on Unix system
+
    ```sh
    source .venv/bin/activate
    ```
 
    - on Windows
+
    ```
    .\.venv\Scripts\activate
    ```
@@ -100,7 +105,7 @@ python3 -m venv .venv
    > deactivate
    > ```
 
-4. Install dependence After enable the venv, type following command to install
+3. Install dependence After enable the venv, type following command to install
    dependence.
 
    ```sh
@@ -108,13 +113,15 @@ python3 -m venv .venv
    ```
 
 
-5. Test is install successful After the setup. when you type `kancolatex` into
+4. Test is install successful After the setup. when you type `kancolatex` into
    your terminal, it shall display the help into.
+
    ```sh
    kancolatex
    ```
 
-   If it success, next you shall init a database for game data by enter:
+5. If it success, next you shall init a database for game data by enter:
+
    ```sh
    kancolatex --reset
    ```
@@ -124,24 +131,49 @@ python3 -m venv .venv
 
 <details open>
     <summary>Download from pip</summary>
-    `pip install kancolatex --upgrade`
+
+`pip install kancolatex --upgrade`
+
 </details>
 
 <details>
     <summary>Download from source</summary>
-   0. Deactivate your python venv is it is enabled
-   1. Delete your local `Kancolatex` folder
-   2. [How to setup](#how-to-setup)
+    
+1. Deactivate your python venv is it is enabled
+2. Delete your local `Kancolatex` folder
+3. [How to setup](#how-to-setup)
+
 </details>
 
 ## How to use
+
+The program have 3 working mode.
+
+1. [Default Mode](#default-mode)
+2. [Export Mode](#export-mode)
+3. [Translate Mode](#translate-mode)
+
+You can change the mode with `-m / --mode` flag.
+
+Example:
+
+- `kancolatex` (default is Default Mode)
+- `kancolatex -m default` (Which will configure to Default Mode)
+- `kancolatex --mode export` (Which will configure to Export Mode)
+- `kancolatex --mode translate` (Which will configure to Translate Mode)
+
+### Default Mode
+
+This is the default mode of the kancolatex. Which is mode working before version 0.0.5 .
+
+Which will parse then fill with the corresponded value from deck builder into latex template.
 
 You must prepare:
 
 - An deck json
 - A latex template
 
-### Preprocess Mode
+#### Preprocess Mode
 
 If you want to access deck json data from latex template. The latex template
 should met such criteria:
@@ -163,7 +195,7 @@ should met such criteria:
 2. Inside the scope of, you can write [Predefined macro](#predefined-macro) to
    access the data you want.
 
-### Define Mode
+#### Define Mode
 
 (To Be Finish)
 
@@ -192,12 +224,12 @@ type DefineConfig = {
 % KancoLaTeX:define:end
 ```
 
-### Output
+#### Output
 
 Default the the result will output to `stdout` and log to `stderr`. If you want
 to store the result somewhere else can use `-o` flag or shell pipeline.
 
-### Example 1
+#### Example 1
 
 ```sh
 kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
@@ -324,7 +356,48 @@ kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
 % KancoLaTeX:preprocess:end
 ```
 
-### Predefined Macro
+#### Predefined Macro
+
+- Airbase
+
+| Mnemonic | Airbase     |
+| -------- | ----------- |
+| A        | airbase1    |
+| B        | airbase2    |
+| C        | airbase1    |
+| U        | All airbase |
+
+> `P = airbase mnemonic`
+
+| Latex                            | Macro                               | Access                            | Usage                 | Example                        | Note                                                                  |
+| -------------------------------- | ----------------------------------- | --------------------------------- | --------------------- | ------------------------------ | --------------------------------------------------------------------- |
+| `\airbase{P}fullAirPower`        | `AIRBASE_{P}_FULL_AIRPOWER`         | `Airbase.{P}.fullAirPower`        | Sortie Airpower       | `\airbaseAfullAirPower`        | Will be empty if airbase in defense mode                              |
+| `\airbase{P}defenseAirPower`     | `AIRBASE_{P}_DEFENSE_AIRPOWER`      | `Airbase.{P}.defenseAirPower`     | Defense Airpower      | `\airbaseBdefenseAirPower`     |                                                                       |
+| `\airbase{P}highDefenseAirPower` | `AIRBASE_{P}_HIGH_DEFENSE_AIRPOWER` | `Airbase.{P}.highDefenseAirPower` | High Defense Airpower | `\airbaseChighDefenseAirPower` |                                                                       |
+| `\airbase{P}mode`                | `AIRBASE_{P}_MODE`                  | `Airbase.{P}.mode`                | Airbase mode          | `\airbaseAmode`                | 0 = Standby, 1 = Mission, 2 = Defense; airbase U access will be empty |
+| `\airbase{P}radius`              | `AIRBASE_{P}_RADIUS`                | `Airbase.{P}.radius`              | Airbase radius        | `\airbaseBradius`              | airbase U access will be empty                                        |
+
+- Airbase Equipment
+
+| Mnemonic | Airbase              |
+| -------- | -------------------- |
+| A        | airbase equipment  1 |
+| B        | airbase equipment  2 |
+| C        | airbase equipment 3  |
+| D        | airbase equipment 4  |
+
+> `P = airbase mnemonic` `T = equipment mnemonic`
+
+| Latex                             | Macro                                 | Access                                      | Usage                      | Example                        | Note                             |
+| --------------------------------- | ------------------------------------- | ------------------------------------------- | -------------------------- | ------------------------------ | -------------------------------- |
+| `\airbase{P}equipment{T}nameJp`   | `AIRBASE_{P}_EQUIPMENT_{T}_NAME_JP`   | `AIRBASE.{P}.equipment.{T}.data.name`       | Equipment Japanese name    | `\airbaseAequipmentAnameJp`    |                                  |
+| `\airbase{P}equipment{T}nameEn`   | `AIRBASE_{P}_EQUIPMENT_{T}_NAME_EN`   | ``                                          | Equipment English name     | `\airbaseBequipmentXnameEn`    | No Access Method                 |
+| `\airbase{P}equipment{T}remodel`  | `AIRBASE_{P}_EQUIPMENT_{T}_REMODEL`   | `AIRBASE.{P}.equipment.{T}remodel`          | Equipment level of remodel | `\airbaseCequipmentCremodel`   |                                  |
+| `\airbase{P}equipment{T}levelAlt` | `AIRBASE_{P}_EQUIPMENT_{T}_LEVEL_ALT` | `AIRBASE.{P}.equipment.{T}levelAlt`         | Plane proficiency          | `\airbaseDequipmentDlevelAlt`  | Only plane will have value       |
+| `\airbase{P}equipment{T}id`       | `AIRBASE_{P}_EQUIPMENT_{T}_ID`        | `AIRBASE.{P}.equipment.{T}.data.id`         | Equipment id               | `\airbaseAequipmentAid`        |                                  |
+| `\airbase{P}equipment{T}typeid`   | `AIRBASE_{P}_EQUIPMENT_{T}_TYPEID`    | `AIRBASE.{P}.equipment.{T}.data.apiTypeId`  | Equipment Type id          | `\airbaseAequipmentAtypeid`    | Diffent naming in Access         |
+| `\airbase{P}equipment{T}iconid`   | `AIRBASE_{P}_EQUIPMENT_{T}_ICONID`    | `AIRBASE.{P}.equipment.{T}.data.iconTypeId` | Equipment icon id          | `\airbaseAequipmentAiconid`    | Diffent naming in Access         |
+| `\airbase{P}equipment{T}equipped` | `AIRBASE_{P}_EQUIPMENT_{T}_EQUIPPED`  | ``                                          | Is Slot have Equipment     | `\airbaseAequipmentAtequipped` | No Access Method; return 0 and 1 |
 
 - Fleet
 
@@ -396,7 +469,7 @@ kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
 | Latex                          | Macro                              | Access                                   | Usage                      | Example                     | Note                             |
 | ------------------------------ | ---------------------------------- | ---------------------------------------- | -------------------------- | --------------------------- | -------------------------------- |
 | `\ship{P}equipment{T}nameJp`   | `SHIP_{P}_EQUIPMENT_{T}_NAME_JP`   | `Ship.{P}.equipment.{T}.data.name`       | Equipment Japanese name    | `\shipDequipmentAnameJp`    |                                  |
-| `\ship{P}equipment{T}nameEn`   | `SHIP_{P}_EQUIPMENT_{T}_NAME_En`   | ``                                       | Equipment English name     | `\shipEequipmentXnameEn`    | No Access Method                 |
+| `\ship{P}equipment{T}nameEn`   | `SHIP_{P}_EQUIPMENT_{T}_NAME_EN`   | ``                                       | Equipment English name     | `\shipEequipmentXnameEn`    | No Access Method                 |
 | `\ship{P}equipment{T}remodel`  | `SHIP_{P}_EQUIPMENT_{T}_REMODEL`   | `Ship.{P}.equipment.{T}remodel`          | Equipment level of remodel | `\shipFequipmentCremodel`   |                                  |
 | `\ship{P}equipment{T}levelAlt` | `SHIP_{P}_EQUIPMENT_{T}_LEVEL_ALT` | `Ship.{P}.equipment.{T}levelAlt`         | Plane proficiency          | `\shipGequipmentDlevelAlt`  | Only plane will have value       |
 | `\ship{P}equipment{T}id`       | `SHIP_{P}_EQUIPMENT_{T}_ID`        | `Ship.{P}.equipment.{T}.data.id`         | Equipment id               | `\shipAequipmentAid`        |                                  |
@@ -410,7 +483,46 @@ kancolatex -t ./example_1_template.tex -n ./example_1_fleet.json
 | ----------------- | ------------------- | ------------------- | ------------------------------ | ------------- | ---- |
 | `\ship{P}slot{T}` | `SHIP_{P}_SLOT_{T}` | `Ship.{P}.slot.{T}` | Maxium Number of Plane in Slot | `\shipAslotA` |      |
 
-### Example
+### Export Mode
+
+> New in 0.0.6
+
+This is the export mode of the kancolatex. 
+
+Which will parse and output a json of processed airbase or fleet info.
+
+You must prepare:
+
+- An deck json
+
+#### Example
+
+- `kancolatex --mode export --export-type airbase -n ./example_1_fleet.json`
+
+   This will return a airbase info json.
+
+- `kancolatex -m export --export-type fleet -n ./example_1_fleet.json -o output.json`
+
+   This will store fleet info into output.json
+
+### Translate Mode
+
+> New in 0.0.6
+
+This is the translate mode of the kancolatex. 
+
+Which will translate a kancolle ship or equipment.
+
+#### Example
+
+- `kancolatex --mode translate --translate-type ship --translate-target 加賀改二護` 
+
+  Return `Kaga Kai Ni Go`
+
+- `kancolatex -m translate --translate-type equipment --translate-target 15m二重測距儀改+21号電探改二+熟練射撃指揮所 `
+
+  Return `15m Duplex Rangefinder Kai + Type 21 Radar Kai 2 + Skilled Fire Direction Center`
+
 
 ## Developer
 
