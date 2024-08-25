@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from pydantic import Field
+from typing_extensions import Optional
 
 from ...ship_id import ShipId
 from .ship_equipment import KcwikiShipEquipment
@@ -7,8 +8,8 @@ from .ship_equipment import KcwikiShipEquipment
 
 class KcwikiShip(BaseModel):
     id: ShipId = Field(alias="_api_id")
-    losMin: int = Field(alias="_los")
-    losMax: int = Field(alias="_los_max")
+    losMin: Optional[int] = Field(alias="_los", default=None)
+    losMax: Optional[int] = Field(alias="_los_max", default=None)
     equipment: list[KcwikiShipEquipment] = Field(alias="_equipment")
 
     nameEnglish: str = Field(alias="_name")
