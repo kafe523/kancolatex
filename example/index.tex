@@ -1,0 +1,103 @@
+\documentclass{article}
+
+\usepackage{fontspec}
+\setmainfont{Noto Sans CJK TC} % Prepare your own CJK font for Kanji display
+
+\directlua{
+    kancolatex = require("kancolatex")
+    kancolatex.InitLoadLib("libkancolatex.dll")
+    kctx = kancolatex.InitContext("noro_example.json") 
+    kancolatex.InitLuaTeXMacro(kctx)
+
+    token.set_macro("customShipAname", kancolatex.AccessPattern(kctx, "CalcManager.FleetInfo.Fleets.0.Ships.0.Data.Name"))
+    token.set_macro("customFleetAlosA", kancolatex.AccessPattern(kctx, "PreCalcMap.fleetAlosA"))
+    token.set_macro("customFleetAlosB", kancolatex.AccessMacro(kctx, "fleetAlosB"))
+}
+
+\begin{document}
+
+Minimal Sample for Kancolatex
+
+% Available Predefined Fleet Macro.
+% fleet Alias are map to 
+% 1 -> A
+% 2 -> B
+% 3 -> C
+% 4 -> D
+
+\fleetAfullAirPower
+\fleetAlosA
+\fleetAlosB
+\fleetAlosC
+\fleetAlosD
+\fleetAspeedKanji
+
+% Available Predefined ship Macro.
+% ship Alias are map to 
+% 1 -> A
+% 2 -> B
+% 3 -> C
+% 4 -> D
+% 5 -> E
+% 6 -> F
+% 7 -> G (Vanguard 7th ship)
+% _ -> U (JTF Fleet 2 1st ship)
+% _ -> V (JTF Fleet 2 2nd ship)
+% _ -> W (JTF Fleet 2 3rd ship)
+% _ -> X (JTF Fleet 2 4th ship)
+% _ -> Y (JTF Fleet 2 5th ship)
+% _ -> Z (JTF Fleet 2 6th ship)
+
+\fleetAshipAnameJp
+\fleetAshipALevel
+\fleetAshipAfullAirPower
+\fleetAshipAdisplayStatusHp
+\fleetAshipAdisplayStatusFirePower
+\fleetAshipAdisplayStatusArmor
+\fleetAshipAdisplayStatusTorpedo
+\fleetAshipAdisplayStatusAvoid
+\fleetAshipAdisplayStatusAsw
+\fleetAshipAdisplayStatusLos
+\fleetAshipAdisplayStatusLuck
+\fleetAshipAdisplayStatusRange
+\fleetAshipAdisplayStatusAccuracy
+
+% Available Predefined item Macro.
+% item Alias are map to
+% 1 -> A
+% 2 -> B
+% 3 -> C
+% 4 -> D
+% 5 -> E
+% _ -> X (Extra slot)
+
+\fleetAshipAitemAnameJp
+\fleetAshipAitemAlevelAlt
+\fleetAshipAitemAlevel
+\fleetAshipAitemAid
+% these two are the same
+\fleetAshipAitemAtypeid
+\fleetAshipAitemAapitypeid
+
+% these two are the same
+\fleetAshipAitemAiconid
+\fleetAshipAitemAicontypeid
+
+\fleetAshipAitemAequipped
+
+% Custom KancoLatex Macro.
+% You can retrieved kancolatex value with `kancolatex.AccessPattern`.
+% Which will ALWAYS return a string of result.
+%
+% You should set macro in the same `\directlua` scope where the kancolatex has been init.
+%
+% The function will return empty string, if the pattern failed to find a value or no value.
+% if the `AccessPattern' crash, it is a bug and contact author for additional support.
+%
+% Remember to pass `kctx` as the first argument.
+
+\customShipAname % Should same as `\fleetAshipAnameJp`
+\customFleetAlosA % Should same as `\fleetAlosA`
+\customFleetAlosB % Should same as `\fleetAlosB`
+
+\end{document}

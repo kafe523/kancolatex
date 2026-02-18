@@ -1,0 +1,4 @@
+go run .\dev\foo\
+go run .\dev\bar\
+
+go generate ./...

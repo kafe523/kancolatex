@@ -1,0 +1,33 @@
+# Minimal Example for KancoLaTeX
+
+This is a minimal example for how to setup and use kancolatex.
+
+. Extra data from noro website following the root README instruction, and put the dump next to your latex document.
+
+. Copy the `kancolatex.lua` and the `libkancolatex` shared library you just compiled next to your latex document.
+
+. Init the kancolatex with `\directlua` block.
+[,luatex]
+----
+\directlua{
+    -- Mininal Init for kancolatex.
+    -- You SHOULD init this on every latex document if you use any kancolatex function
+    kancolatex = require("kancolatex")
+    -- Compile the library by yourself, and load with InitLoadLib.
+    -- windows should be a `.dll`, macso `.dylib`, and linux is `.so`.
+    kancolatex.InitLoadLib("libkancolatex.dll")
+    -- Grab the full dump from noro website into json file. and load with InitContext.
+    kctx = kancolatex.InitContext("noro_example.json") 
+    -- This will call `tex.set_macro` to init all the macro.
+    kancolatex.InitLuaTeXMacro(kctx)
+}
+----
+
+// [start=3]
+. You must use `--shell-escape` flag to compile the latex document.
+[,sh]
+---
+lualatex --shell-escape index.tex
+---
+
+And you should have a pdf file with noro data.

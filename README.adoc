@@ -1,0 +1,35 @@
+# KancoLaTeX
+
+A library for generate LuaLaTeX macro from Noro6 Kancolle Calculator.
+
+## Requirement
+
+- go (building library)
+
+## Building Library
+
+. Build the library with following command
+- Macos: `go build -buildmode=c-shared -o bin\libkancolatex.dll .\cmd\libkancolatex\`
+- Windows: `go build -buildmode=c-shared -o bin\libkancolatex.dylib .\cmd\libkancolatex\`
+- linux: `go build -buildmode=c-shared -o bin\libkancolatex.so .\cmd\libkancolatex\`
+
+The Compiled library will be in `bin/` directory.
+
+## Extra Noro6 Dump
+
+. Visit https://noro6.github.io/kc-web/#/[Noro6] Website And Create the template.
+
+. Open the browser console (F12), and get the vue state as json string. With following javascript.
+`(()=>{let e=document.querySelector("#app").__vue__.$store.state.mainSaveData;return JSON.stringify(e.tempData[e.tempIndex])})();``
+
+. Save the text into your computer.
+
+## Setup
+
+Please take a look the `example` folder for detail setup step.
+
+## Breaking Change from pervious python version
+
+- No longer offer python pip package.
+- Does not include Preprocessor.
+- Access Pattern are not compatible to the old version.
